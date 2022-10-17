@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <style>
+      .container { height: 100%; width: 100%; align: center; text-align: center; } .link {
+      text-decoration: none; } .confirmationButton { border-radius: 10px;
+      border: none; background: #0d6cd8; cursor: pointer; transition: all 0.5s;
+      } .confirmationButton:hover { filter: brightness(0.8); } .contentButton {
+      margin-left: 10px; margin-right: 10px; margin-top: 8px; margin-bottom:
+      8px; font-weight: bold; color: #fff; }
+    </style>
+  </head>
+  <body>
+    <main class='container'>
+      <h1>Olá {{name}},</h1>
+      <p>Para confirmar seu email clique no botão abaixo:</p>
+      <a class='link' href='{{url}}'>
+        <button class='confirmationButton'>
+          <p class='contentButton'>
+            Confirmar
+          </p>
+        </button>
+      </a>
+      <p>Se não foi você que pediu a confirmação de email apenas ignore.</p>
+    </main>
+  </body>
+</html>
