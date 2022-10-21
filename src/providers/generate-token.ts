@@ -8,7 +8,7 @@ export class GenerateToken {
 
   async generate({
     id,
-    username,
+    cpf,
     email,
     is_admin,
     is_active,
@@ -17,7 +17,7 @@ export class GenerateToken {
       const token = this.jwtService.sign(
         {
           sub: id,
-          username,
+          cpf,
           email,
           is_admin,
           is_active,

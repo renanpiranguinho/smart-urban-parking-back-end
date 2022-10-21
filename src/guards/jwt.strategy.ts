@@ -22,14 +22,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate({ sub }: IJwtPayload) {
-    const { id, username, email, is_admin, is_active } =
-      await this.usersRepository.findById(sub);
+    const { id, cpf, email, is_active } = await this.usersRepository.findById(
+      parseInt(sub),
+    );
 
     return {
       id,
-      username,
+      cpf,
       email,
-      is_admin,
       is_active,
     };
   }

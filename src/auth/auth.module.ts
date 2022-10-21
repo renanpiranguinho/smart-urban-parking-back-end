@@ -14,8 +14,6 @@ import { BullModule } from '@nestjs/bull';
 import { ActiveGuard } from '../guards/active.guard';
 import { UsersRepository } from '../models/users/repository/user.repository';
 import { GenerateToken } from '../providers/generate-token';
-import { GenerateRefreshToken } from '../providers/generate-refresh-token';
-import { RefreshTokenRepository } from './repository/refresh-token-repository';
 
 @Module({
   imports: [
@@ -38,8 +36,6 @@ import { RefreshTokenRepository } from './repository/refresh-token-repository';
     ActiveGuard,
     UsersRepository,
     GenerateToken,
-    GenerateRefreshToken,
-    RefreshTokenRepository,
   ],
 })
 export class AuthModule {}

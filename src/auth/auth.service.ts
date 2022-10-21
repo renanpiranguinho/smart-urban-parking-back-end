@@ -12,10 +12,6 @@ import { SendMailService } from '../mail/send-mail.service';
 import { EncryptData } from '../utils/encrypt-data';
 import { UsersRepository } from '..//models/users/repository/user.repository';
 import { GenerateToken } from '../providers/generate-token';
-import { GenerateRefreshToken } from '../providers/generate-refresh-token';
-import { RefreshToken } from './entity/refresh-token.entity';
-import { RefreshTokenRepository } from './repository/refresh-token-repository';
-import dayjs from 'dayjs';
 
 interface ITokenPayload {
   sub: string;
@@ -25,11 +21,9 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly generateToken: GenerateToken,
-    private readonly generateRefreshToken: GenerateRefreshToken,
     private readonly sendMailService: SendMailService,
     private readonly encryptDate: EncryptData,
     private readonly usersRepository: UsersRepository,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   async authenticate({
@@ -54,7 +48,7 @@ export class AuthService {
     if (!user.is_active) {
       this.sendConfirmationAccountMail({
         id: user.id,
-        username: user.username,
+        username: user.name,
         email: user.email,
       });
     }
@@ -64,70 +58,18 @@ export class AuthService {
 
   async login({
     id,
-    username,
+    cpf,
     email,
     is_admin,
     is_active,
-  }: LoginUserDto): Promise<{ token: string; refreshToken: RefreshToken }> {
+  }: LoginUserDto): Promise<{ token: string }> {
     const token = await this.generateToken.generate({
       id,
-      username,
+      cpf,
       email,
       is_admin,
       is_active,
     });
-
-    const refreshToken = await this.generateRefreshToken.generate({
-      user_email: email,
-      user_id: id,
-    });
-
-    return { token, refreshToken };
-  }
-
-  async logout(email: string): Promise<RefreshToken> {
-    const refreshToken = await this.refreshTokenRepository.deleteByEmail(email);
-
-    return refreshToken;
-  }
-
-  async refresh(
-    code: string,
-  ): Promise<
-    { token: string } | { token: string; refreshToken: RefreshToken }
-  > {
-    const refreshTokenFound = await this.refreshTokenRepository.findById(code);
-
-    if (!refreshTokenFound) {
-      throw new UnauthorizedException({
-        statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Refresh toke is invalid',
-      });
-    }
-
-    const { id, username, email, is_admin, is_active } =
-      await this.usersRepository.findById(refreshTokenFound.user_id);
-
-    const token = await this.generateToken.generate({
-      id,
-      username,
-      email,
-      is_admin,
-      is_active,
-    });
-
-    const refreshTokenExpired = dayjs().isAfter(
-      dayjs.unix(refreshTokenFound.expires_in),
-    );
-
-    if (refreshTokenExpired) {
-      const refreshToken = await this.generateRefreshToken.generate({
-        user_email: email,
-        user_id: id,
-      });
-
-      return { token, refreshToken };
-    }
 
     return { token };
   }
@@ -171,12 +113,12 @@ export class AuthService {
     } catch (error) {
       const { sub } = this.jwtService.decode(token) as ITokenPayload;
 
-      const user = await this.usersRepository.findById(sub);
+      const user = await this.usersRepository.findById(parseInt(sub));
 
       this.sendConfirmationAccountMail({
         id: user.id,
         email: user.email,
-        username: user.username,
+        username: user.name,
       });
 
       throw new BadRequestException({

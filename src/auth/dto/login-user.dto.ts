@@ -1,6 +1,6 @@
 export class LoginUserDto {
-  id: string;
-  username: string;
+  id: number;
+  cpf: string;
   email: string;
   is_admin: boolean;
   is_active: boolean;

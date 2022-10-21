@@ -30,6 +30,7 @@ export class UsersController {
   async create(
     @Body(PasswordPipe) createUserDto: CreateUserDto,
   ): Promise<NestResponse> {
+    console.log(createUserDto);
     const newUser = await this.usersService.create(createUserDto);
 
     const response = new NestResponseBuilder()
@@ -72,7 +73,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<NestResponse> {
+  async findOne(@Param('id') id: number): Promise<NestResponse> {
     const userFound = await this.usersService.findById(id);
 
     const response = new NestResponseBuilder()
@@ -87,7 +88,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<NestResponse> {
     const updatedUser = await this.usersService.update(id, updateUserDto);
@@ -104,7 +105,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<NestResponse> {
+  async remove(@Param('id') id: number): Promise<NestResponse> {
     const deletedUser = await this.usersService.remove(id);
 
     const response = new NestResponseBuilder()

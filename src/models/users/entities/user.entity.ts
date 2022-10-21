@@ -1,17 +1,18 @@
+import { Role } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 export class User {
-  id: string;
-  username: string;
+  id: number;
+  name: string;
+  cpf: string;
   email: string;
 
   @Exclude()
   password?: string;
 
-  avatar_url: string;
-  is_admin: boolean;
   is_active: boolean;
-  favorite_movie: string;
+  role: Role;
+
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;

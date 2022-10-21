@@ -13,7 +13,8 @@ export class PasswordPipe implements PipeTransform {
   constructor(private readonly encryptData: EncryptData) {}
 
   async transform({
-    username,
+    name,
+    cpf,
     email,
     password,
   }: CreateUserDto | UpdateUserDto): Promise<CreateUserDto | UpdateUserDto> {
@@ -31,7 +32,8 @@ export class PasswordPipe implements PipeTransform {
     const passwordHash = await this.encryptData.encrypt(password, 10);
 
     return {
-      username,
+      name,
+      cpf,
       email,
       password: passwordHash,
     };

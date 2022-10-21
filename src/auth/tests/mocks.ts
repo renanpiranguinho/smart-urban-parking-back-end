@@ -1,16 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { mockCreateUserReturnService } from '../../models/users/tests/mocks';
 import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
-import { RefreshToken } from '../entity/refresh-token.entity';
 
 export const mockToken = 'ifhdgboie8.fh3847ifvoijngo32in.32847oguniodfh';
-
-export const mockRefreshToken: RefreshToken = {
-  id: 'sdflkjghsdlkjf',
-  expires_in: 12312312,
-  user_email: 'test@test.com',
-  user_id: 'f7368e17-cea9-4787-8577-ad24619532b5',
-};
 
 export const mockLoginReturnController = new NestResponseBuilder()
   .setStatus(HttpStatus.OK)
@@ -42,10 +34,8 @@ export const mockLoginInput = {
   email: 'test@test.com',
   is_admin: false,
   is_active: false,
-  refreshToken: mockRefreshToken,
 };
 
 export const mockLoginReturn = {
   token: mockToken,
-  refreshToken: mockRefreshToken,
 };

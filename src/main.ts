@@ -22,6 +22,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  await app.listen(3333);
+  await app.listen(process.env.PORT);
 }
 bootstrap();

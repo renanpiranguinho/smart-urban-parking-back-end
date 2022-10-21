@@ -4,10 +4,10 @@ import { User } from '../entities/user.entity';
 
 export interface IUsersRepository {
   create(createUserDto: CreateUserDto): Promise<User>;
-  findById(id: string): Promise<User>;
+  findById(id: number): Promise<User>;
   findByEmail(email: string): Promise<User>;
   findAll(): Promise<User[]>;
-  updateById(id: string, updateUserDto: UpdateUserDto): Promise<User>;
+  updateById(id: number, updateUserDto: UpdateUserDto): Promise<User>;
   updateByEmail(email: string, updateUserDto: UpdateUserDto): Promise<User>;
-  softDelete(id: string): Promise<User>;
+  softDelete(id: number): Promise<User>;
 }

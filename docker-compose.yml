@@ -6,11 +6,12 @@ services:
     container_name: postgres_api_container
     restart: always
     ports:
-      - 5432:5432
+      - '${DATABASE_PORT}:5432'
     volumes:
       - /var/lib/postgresql/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     networks:
       - app-net
 

@@ -9,19 +9,20 @@ import { IUsersRepository } from './i-users-repository';
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create({ email, password, username }: CreateUserDto): Promise<User> {
+  async create({ email, name, password, cpf }: CreateUserDto): Promise<User> {
+    console.log(name);
     const newUser = await this.prismaService.user.create({
       data: {
+        name,
         email,
         password,
-        username,
+        cpf,
       },
     });
-
     return newUser;
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: number): Promise<User> {
     const userFound = await this.prismaService.user.findFirst({
       where: { id, deleted_at: null },
     });
@@ -46,13 +47,14 @@ export class UsersRepository implements IUsersRepository {
   }
 
   async updateById(
-    id: string,
-    { username, email, password, is_active }: UpdateUserDto,
+    id: number,
+    { cpf, name, email, password, is_active }: UpdateUserDto,
   ): Promise<User> {
     const updatedUser = await this.prismaService.user.update({
       where: { id },
       data: {
-        username,
+        cpf,
+        name,
         email,
         password,
         is_active,
@@ -64,12 +66,12 @@ export class UsersRepository implements IUsersRepository {
 
   async updateByEmail(
     email: string,
-    { username, email: newEmail, password }: UpdateUserDto,
+    { cpf: cpf, email: newEmail, password }: UpdateUserDto,
   ): Promise<User> {
     const updatedUser = await this.prismaService.user.update({
       where: { email },
       data: {
-        username,
+        cpf: cpf,
         email: newEmail,
         password,
       },
@@ -78,7 +80,7 @@ export class UsersRepository implements IUsersRepository {
     return updatedUser;
   }
 
-  async softDelete(id: string): Promise<User> {
+  async softDelete(id: number): Promise<User> {
     const deletedUser = await this.prismaService.user.update({
       where: { id },
       data: { deleted_at: new Date(), is_active: false },

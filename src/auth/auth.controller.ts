@@ -16,8 +16,8 @@ import { ActiveGuard } from '../guards/active.guard';
 
 export interface IUserRequestData {
   user: {
-    id: string;
-    username: string;
+    id: number;
+    cpf: string;
     email: string;
     is_admin: boolean;
     is_active: boolean;
@@ -34,31 +34,6 @@ export class AuthController {
   @Post('login')
   async login(@Req() { user }: IUserRequestData): Promise<NestResponse> {
     const tokens = await this.authService.login(user);
-
-    const response = new NestResponseBuilder()
-      .setStatus(HttpStatus.OK)
-      .setBody(tokens)
-      .build();
-
-    return response;
-  }
-
-  @UseGuards(LocalAuthGuard)
-  @Post('logout')
-  async logout(@Req() { user }: IUserRequestData): Promise<NestResponse> {
-    const refreshToken = await this.authService.logout(user.email);
-
-    const response = new NestResponseBuilder()
-      .setBody(refreshToken)
-      .setStatus(HttpStatus.OK)
-      .build();
-
-    return response;
-  }
-
-  @Get('refresh/:code')
-  async refresh(@Param('code') code: string): Promise<NestResponse> {
-    const tokens = await this.authService.refresh(code);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
