@@ -27,25 +27,63 @@ Back-end for a system of urban park management
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Projeto de controle de estacionamento rotativo desenvolvido em Typescript utilizando o framework NestJs para criação e manuteção da API RESTFul responsável pelo Back-End
 
-## Installation
+## Requisitos
+- Typescript
+- NodeJs
+- Docker
+- Npm ou Yarn
+- docker-compose
 
+## Dependencias
+Ao clonar o projeto instale as dependências
 ```bash
 $ npm install
 ```
+ou
 
-## Running the app
+```bash
+$ yarn install
+```
+
+## Variáveis de ambiente
+Para a devida execução do projeto é necessário configurar um arquivo de variáveis de ambiente. Na raiz do projeto existe um arquivo chamado .env.exemple  que pode servir como base para sua configuração.
+Crie um arquivo chamado ".env" na raiz do seu projeto e defina as variáveis como no exemplo.
+
+## Banco de dados
+Para rodar o banco utilizando docker execute o seguinte comando
+```bash
+$ docker-compose up -d
+```
+
+## Executando as Migrations
+Para atualizar seu banco de dados execute o comando abaixo, ele irá executar as migrations referentes ao schema atual, caso haja alterações no schema.prisma o mesmo irá gerar uma nova migration
+
+```bash
+npx prisma migrate dev 
+```
+Caso queira criar uma nova migration execute o comando abaixo
+
+```bash
+npx prisma migrate dev --name nome_da_migration
+```
+
+## Executando a aplicação
+Use os seguintes comandos para executar a aplicação
 
 ```bash
 # development
-$ npm run start
+$ npm run start ou
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ npm run start:dev ou
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ npm run start:prod ou
+$ yarn start:prod
 ```
 
 ## Test
