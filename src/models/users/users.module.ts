@@ -6,7 +6,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { EncryptData } from '../../utils/encrypt-data';
 import { PasswordPipe } from './password.pipe';
 import { BullModule } from '@nestjs/bull';
-import { RoleGuard } from 'src/guards/role.guard';
 import { UsersRepository } from './repository/user.repository';
 import { GenerateToken } from 'src/providers/generate-token';
 import { AuthService } from 'src/auth/auth.service';
@@ -31,7 +30,6 @@ import { SendMailService } from 'src/mail/send-mail.service';
     JwtModule,
     EncryptData,
     PasswordPipe,
-    RoleGuard,
     UsersRepository,
     GenerateToken,
   ],

@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '../models/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -27,13 +22,16 @@ export class AuthService {
   ) {}
 
   async authenticate({
-    email,
+    login,
     password,
   }: CreateAuthDto): Promise<User | false> {
-    const user = await this.usersRepository.findByEmail(email);
+    let user = await this.usersRepository.findByEmail(login);
 
     if (!user) {
-      return false;
+      user = await this.usersRepository.findByCpf(login);
+      if (!user) {
+        return false;
+      }
     }
 
     const passwordHasMatch = await this.encryptDate.decrypt(
@@ -45,14 +43,6 @@ export class AuthService {
       return false;
     }
 
-    if (!user.is_active) {
-      this.sendConfirmationAccountMail({
-        id: user.id,
-        username: user.name,
-        email: user.email,
-      });
-    }
-
     return user;
   }
 
@@ -60,71 +50,15 @@ export class AuthService {
     id,
     cpf,
     email,
-    is_admin,
     is_active,
   }: LoginUserDto): Promise<{ token: string }> {
     const token = await this.generateToken.generate({
       id,
       cpf,
       email,
-      is_admin,
       is_active,
     });
 
     return { token };
-  }
-
-  async sendConfirmationAccountMail({ id, username, email }) {
-    const token = this.jwtService.sign(
-      { sub: id },
-      { secret: process.env.EMAIL_SECRET_TOKEN_KEY, expiresIn: '1h' },
-    );
-
-    try {
-      await this.sendMailService.sendConfirmationMail({
-        email,
-        name: username,
-        url: `${process.env.APPLICATION_DOMAIN}/confirm/${token}`,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    return;
-  }
-
-  async receivedConfirmationAccountMail(
-    token: string,
-  ): Promise<{ user: User; message: string }> {
-    try {
-      const { sub } = await this.jwtService.verify(token, {
-        secret: process.env.EMAIL_SECRET_TOKEN_KEY,
-      });
-
-      const validatedUser = await this.usersRepository.updateById(sub, {
-        is_active: true,
-      });
-
-      const user = new User(validatedUser);
-
-      return {
-        user,
-        message: 'Email has confirmed',
-      };
-    } catch (error) {
-      const { sub } = this.jwtService.decode(token) as ITokenPayload;
-
-      const user = await this.usersRepository.findById(parseInt(sub));
-
-      this.sendConfirmationAccountMail({
-        id: user.id,
-        email: user.email,
-        username: user.name,
-      });
-
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Invalid confirmation',
-      });
-    }
   }
 }

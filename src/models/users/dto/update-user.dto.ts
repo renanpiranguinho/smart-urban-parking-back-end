@@ -4,7 +4,7 @@ import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString({
-    message: 'Invalid username is format',
+    message: 'Invalid name is format',
   })
   name?: string;
 

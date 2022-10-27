@@ -7,7 +7,6 @@ export interface IJwtPayload {
   sub: string;
   username: string;
   email: string;
-  is_admin: boolean;
   is_active: boolean;
 }
 

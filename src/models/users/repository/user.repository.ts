@@ -38,6 +38,14 @@ export class UsersRepository implements IUsersRepository {
     return userFound;
   }
 
+  async findByCpf(cpf: string): Promise<User> {
+    const userFound = await this.prismaService.user.findFirst({
+      where: { cpf },
+    });
+
+    return userFound;
+  }
+
   async findAll(): Promise<User[]> {
     const allUsers = await this.prismaService.user.findMany({
       where: { deleted_at: null },

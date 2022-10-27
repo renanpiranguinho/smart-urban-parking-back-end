@@ -13,7 +13,6 @@ export const mockCreateUserReturnService = {
   email: 'test@test.com',
   password: '123456',
   avatar_url: null,
-  is_admin: false,
   is_active: false,
   created_at: new Date(),
   updated_at: new Date(),

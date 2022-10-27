@@ -18,7 +18,6 @@ import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PasswordPipe } from './password.pipe';
-import { RoleGuard } from '../../guards/role.guard';
 import { IUserRequestData } from '../../auth/auth.controller';
 
 @ApiTags('Users')
@@ -32,18 +31,17 @@ export class UsersController {
   ): Promise<NestResponse> {
     console.log(createUserDto);
     const newUser = await this.usersService.create(createUserDto);
-
+    console.log(newUser);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
       .setHeaders({ Location: `/users/${newUser.id}` })
       .setBody(newUser)
       .build();
-
+    console.log(response);
     return response;
   }
 
   @UseGuards(JwtAuthGuard)
-  @UseGuards(RoleGuard)
   @Get()
   async findAll(): Promise<NestResponse> {
     const allUsers = await this.usersService.findAll();
@@ -65,11 +63,10 @@ export class UsersController {
       .setStatus(HttpStatus.OK)
       .setBody(userFound)
       .build();
-
+    console.log(response);
     return response;
   }
 
-  @UseGuards(RoleGuard)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get(':id')

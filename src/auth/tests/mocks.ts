@@ -32,7 +32,6 @@ export const mockLoginInput = {
   id: 'f7368e17-cea9-4787-8577-ad24619532b5',
   username: 'test',
   email: 'test@test.com',
-  is_admin: false,
   is_active: false,
 };
 

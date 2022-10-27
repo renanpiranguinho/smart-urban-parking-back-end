@@ -12,7 +12,6 @@ interface UserRequestData {
     email: string;
     username: string;
     is_active: boolean;
-    is_admin: boolean;
   };
 }
 
