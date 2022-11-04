@@ -68,15 +68,11 @@ export class AuthService {
       { secret: process.env.EMAIL_SECRET_TOKEN_KEY, expiresIn: '1h' },
     );
 
-    try {
-      await this.sendMailService.sendConfirmationMail({
-        email,
-        name: username,
-        url: `${process.env.APPLICATION_DOMAIN}/confirm/${token}`,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    await this.sendMailService.sendConfirmationMail({
+      email,
+      name: username,
+      url: `${process.env.APPLICATION_DOMAIN}/confirm/${token}`,
+    });
   }
 
   async receivedConfirmationAccountMail(
