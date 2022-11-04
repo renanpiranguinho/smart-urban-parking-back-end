@@ -9,8 +9,8 @@ import { BullModule } from '@nestjs/bull';
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'redis_container',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD,
       },
     }),
@@ -20,7 +20,7 @@ import { BullModule } from '@nestjs/bull';
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST,
-        port: 587,
+        port: process.env.EMAIL_PORT,
         secure: false,
         auth: {
           user: process.env.EMAIL_LOGIN,
