@@ -29,15 +29,13 @@ export class UsersController {
   async create(
     @Body(PasswordPipe) createUserDto: CreateUserDto,
   ): Promise<NestResponse> {
-    console.log(createUserDto);
     const newUser = await this.usersService.create(createUserDto);
-    console.log(newUser);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
       .setHeaders({ Location: `/users/${newUser.id}` })
       .setBody(newUser)
       .build();
-    console.log(response);
+
     return response;
   }
 
@@ -63,7 +61,6 @@ export class UsersController {
       .setStatus(HttpStatus.OK)
       .setBody(userFound)
       .build();
-    console.log(response);
     return response;
   }
 
