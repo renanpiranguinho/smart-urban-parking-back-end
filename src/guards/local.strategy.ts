@@ -20,6 +20,21 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       });
     }
 
+    const { id, email, name, is_active } = user;
+
+    if (!is_active) {
+      this.authService.sendConfirmationAccountMail({
+        id,
+        email,
+        username: name,
+      });
+
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'confirm your email first',
+      });
+    }
+
     return new User(user);
   }
 }

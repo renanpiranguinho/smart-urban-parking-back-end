@@ -32,11 +32,11 @@ export class UsersService {
           deleted_at: null,
         });
 
-        /*await this.authService.sendConfirmationAccountMail({
+        this.authService.sendConfirmationAccountMail({
           id: activeUser.id,
           email,
           username: name,
-        });*/
+        });
 
         return new User(activeUser);
       }
@@ -53,12 +53,13 @@ export class UsersService {
       email,
       password,
     });
-    console.log(newUser);
-    /*await this.authService.sendConfirmationAccountMail({
+
+    this.authService.sendConfirmationAccountMail({
       id: newUser.id,
       email,
       username: name,
-    });*/
+    });
+
     return new User(newUser);
   }
 

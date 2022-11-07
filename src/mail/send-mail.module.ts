@@ -4,23 +4,24 @@ import { SendMailService } from './send-mail.service';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SendMailConsumer } from './send-mail-consumer';
 import { BullModule } from '@nestjs/bull';
+import { RedisQueueEnum } from './enums/redis-queue.enum';
 
 @Module({
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'redis_container',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD,
       },
     }),
     BullModule.registerQueue({
-      name: 'mail-queue',
+      name: RedisQueueEnum.MAIL_QUEUE,
     }),
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST,
-        port: 587,
+        port: +process.env.EMAIL_PORT,
         secure: false,
         auth: {
           user: process.env.EMAIL_LOGIN,
