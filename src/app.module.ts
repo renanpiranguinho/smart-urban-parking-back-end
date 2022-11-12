@@ -6,11 +6,18 @@ import { HttpExceptionFilter } from './common/filters/httpException.filter';
 
 import { PrismaService } from './prisma/prisma.service';
 import { UsersModule } from './models/users/users.module';
+import { CreditCardsModule } from './models/credit-cards/credit-cards.module';
 import { SendMailModule } from './mail/send-mail.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, SendMailModule],
+  imports: [
+    UsersModule,
+    CreditCardsModule,
+    AuthModule,
+    SendMailModule,
+    CreditCardsModule,
+  ],
   providers: [
     PrismaService,
     {
