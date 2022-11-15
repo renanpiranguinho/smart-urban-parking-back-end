@@ -6,19 +6,11 @@ import { LoginUserDto } from '../auth/dto/login-user.dto';
 export class GenerateToken {
   constructor(private readonly jwtService: JwtService) {}
 
-  async generate({
-    id,
-    cpf,
-    email,
-    role,
-    is_active,
-  }: LoginUserDto): Promise<string> {
+  async generate({ id, role, is_active }: LoginUserDto): Promise<string> {
     const token = this.jwtService.sign(
       {
         sub: id,
         role,
-        cpf,
-        email,
         is_active,
       },
       {
