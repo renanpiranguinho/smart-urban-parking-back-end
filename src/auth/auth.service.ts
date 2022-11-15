@@ -48,14 +48,12 @@ export class AuthService {
 
   async login({
     id,
-    cpf,
-    email,
+    role,
     is_active,
   }: LoginUserDto): Promise<{ token: string }> {
     const token = await this.generateToken.generate({
       id,
-      cpf,
-      email,
+      role,
       is_active,
     });
 

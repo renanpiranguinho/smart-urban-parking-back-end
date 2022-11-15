@@ -19,8 +19,12 @@ import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PasswordPipe } from './password.pipe';
 import { IUserRequestData } from '../../auth/auth.controller';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from './enums/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @ApiTags('Users')
+@UseGuards(RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -39,6 +43,7 @@ export class UsersController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<NestResponse> {
@@ -64,6 +69,7 @@ export class UsersController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get(':id')
@@ -78,6 +84,7 @@ export class UsersController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
@@ -96,6 +103,7 @@ export class UsersController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
