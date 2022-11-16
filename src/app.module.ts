@@ -9,12 +9,14 @@ import { UsersModule } from './models/users/users.module';
 import { CreditCardsModule } from './models/credit-cards/credit-cards.module';
 import { SendMailModule } from './mail/send-mail.module';
 import { AuthModule } from './auth/auth.module';
+import { PaymentsModule } from './models/payments/payments.module';
 
 @Module({
   imports: [
     UsersModule,
     CreditCardsModule,
     AuthModule,
+    PaymentsModule,
     SendMailModule,
     CreditCardsModule,
   ],

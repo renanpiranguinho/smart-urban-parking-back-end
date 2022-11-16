@@ -22,6 +22,10 @@ model User {
   updated_at DateTime     @updatedAt()
   deleted_at DateTime?
   cards      CreditCard[]
+
+  // Relations
+  purchase_for_user Payment[] @relation(name: "PurchaseTo")
+  purchase_by_user  Payment[] @relation(name: "PurchaseBy")
 }
 
 model CreditCard {
@@ -41,4 +45,35 @@ enum Role {
   USER
   FISCAL
   ADMIN
+}
+
+enum Status {
+  pending
+  approved
+  inprocess
+  inmediation
+  rejected
+  cancelled
+  refunded
+  chargedback
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+  payment_id String   @unique()
+  status Status @default(pending)
+  method     String
+  description String
+
+  // Relations
+  purchase_to    User @relation(name: "PurchaseTo", fields: [purchase_to_id], references: [id])
+  purchase_to_id Int
+
+  purchase_by    User @relation(name: "PurchaseBy", fields: [purchase_by_id], references: [id])
+  purchase_by_id Int
+
+  hash String
 }
