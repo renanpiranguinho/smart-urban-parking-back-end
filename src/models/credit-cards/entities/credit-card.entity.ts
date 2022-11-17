@@ -3,8 +3,8 @@ export class CreditCard {
   ownerId: number;
 
   number: string;
-  expirationMonth: string;
-  expirationYear: string;
+  expirationMonth: number;
+  expirationYear: number;
   cvc: number;
 
   created_at: Date;

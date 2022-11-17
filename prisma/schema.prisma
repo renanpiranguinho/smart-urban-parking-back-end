@@ -29,8 +29,8 @@ model CreditCard {
   owner           User     @relation(fields: [ownerId], references: [id])
   ownerId         Int
   number          String
-  expirationMonth String
-  expirationYear  String
+  expirationMonth Int
+  expirationYear  Int
   cvc             Int
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt()

@@ -1,11 +1,4 @@
-import {
-  IsCreditCard,
-  IsInt,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsCreditCard, IsInt, IsNotEmpty, IsString } from 'class-validator';
 export class CreateCreditCardDto {
   @IsInt({
     message: 'Owner id not a number',
@@ -26,27 +19,21 @@ export class CreateCreditCardDto {
   })
   number: string;
 
-  @MinLength(2, {
-    message: 'Credit card expiration month is invalid',
-  })
-  @MaxLength(2, {
-    message: 'Credit card expiration month is invalid',
+  @IsInt({
+    message: 'Not a number',
   })
   @IsNotEmpty({
     message: 'Credit card expiration month empty',
   })
-  expirationMonth: string;
+  expirationMonth: number;
 
-  @MinLength(2, {
-    message: 'Credit card expiration month is invalid',
-  })
-  @MaxLength(2, {
-    message: 'Credit card expiration month is invalid',
+  @IsInt({
+    message: 'Not a number',
   })
   @IsNotEmpty({
     message: 'Credit card expiration year empty',
   })
-  expirationYear: string;
+  expirationYear: number;
 
   @IsInt({
     message: 'Credit card security code is not a number',
