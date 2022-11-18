@@ -17,11 +17,14 @@ import {
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Role } from '../users/enums/role.enum';
+import { Roles } from 'src/decorators/roles.decorator';
 
 export interface IFindCarRequestData {
   license_plate: string;
 }
-
+@UseGuards(RolesGuard)
 @Controller('cars')
 export class CarsController {
   constructor(private readonly carsService: CarsService) {}
@@ -42,6 +45,7 @@ export class CarsController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<NestResponse> {
@@ -66,6 +70,7 @@ export class CarsController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @UseGuards(JwtAuthGuard)
   @Get('/find/:id')
   async findById(@Param('id') id: number): Promise<NestResponse> {
@@ -78,6 +83,7 @@ export class CarsController {
     return response;
   }
 
+  @Roles(Role.ADMIN, Role.FISCAL)
   @UseGuards(JwtAuthGuard)
   @Get('/findbyplate')
   async findByLicensePlate(
