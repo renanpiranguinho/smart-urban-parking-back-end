@@ -1,6 +1,7 @@
+import { Role } from 'src/models/users/enums/role.enum';
+
 export class LoginUserDto {
   id: number;
-  cpf: string;
-  email: string;
+  role: Role;
   is_active: boolean;
 }

@@ -1,6 +1,8 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
+import { JobsEnum } from './enums/jobs.enum';
+import { RedisQueueEnum } from './enums/redis-queue.enum';
 
 interface SendConfirmationMailDto {
   email: string;
@@ -8,11 +10,11 @@ interface SendConfirmationMailDto {
   url: string;
 }
 
-@Processor('mail-queue')
+@Processor(RedisQueueEnum.MAIL_QUEUE)
 export class SendMailConsumer {
   constructor(private readonly mailerService: MailerService) {}
 
-  @Process('send-mail-job')
+  @Process(JobsEnum.SEND_MAIL)
   async sendConfirmationMailConsumer(job: Job<SendConfirmationMailDto>) {
     const { email, name, url } = job.data;
 
@@ -20,7 +22,7 @@ export class SendMailConsumer {
       to: email,
       from: process.env.EMAIL_LOGIN,
       subject: 'Movie Rating | Confirmação',
-      template: '../mail/template/confirmation',
+      template: './confirmation',
       context: {
         name,
         url,

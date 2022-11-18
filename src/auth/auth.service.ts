@@ -9,7 +9,7 @@ import { UsersRepository } from '..//models/users/repository/user.repository';
 import { GenerateToken } from '../providers/generate-token';
 
 interface ITokenPayload {
-  sub: string;
+  sub: number;
 }
 @Injectable()
 export class AuthService {
@@ -48,17 +48,64 @@ export class AuthService {
 
   async login({
     id,
-    cpf,
-    email,
+    role,
     is_active,
   }: LoginUserDto): Promise<{ token: string }> {
     const token = await this.generateToken.generate({
       id,
-      cpf,
-      email,
+      role,
       is_active,
     });
 
     return { token };
+  }
+
+  async sendConfirmationAccountMail({ id, username, email }) {
+    const token = this.jwtService.sign(
+      { sub: id },
+      { secret: process.env.EMAIL_SECRET_TOKEN_KEY, expiresIn: '1h' },
+    );
+
+    await this.sendMailService.sendConfirmationMail({
+      email,
+      name: username,
+      url: `${process.env.APPLICATION_DOMAIN}/confirm/${token}`,
+    });
+  }
+
+  async receivedConfirmationAccountMail(
+    token: string,
+  ): Promise<{ user: User; message: string }> {
+    try {
+      const { sub } = await this.jwtService.verify(token, {
+        secret: process.env.EMAIL_SECRET_TOKEN_KEY,
+      });
+
+      const validatedUser = await this.usersRepository.updateById(sub, {
+        is_active: true,
+      });
+
+      const user = new User(validatedUser);
+
+      return {
+        user,
+        message: 'Email has confirmed',
+      };
+    } catch (error) {
+      const { sub } = this.jwtService.decode(token) as ITokenPayload;
+
+      const user = await this.usersRepository.findById(sub);
+
+      this.sendConfirmationAccountMail({
+        id: user.id,
+        email: user.email,
+        username: user.name,
+      });
+
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Invalid confirmation',
+      });
+    }
   }
 }
