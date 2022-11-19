@@ -1,190 +1,181 @@
+import { UpdatePaymentInterface } from './interfaces/update-payment.interface';
+import { PaymentMethods } from './enums/payment-method.enum';
 import {
   //BadRequestException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePaymentDto, PaymentMethods } from './dto/create-payment.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Payment } from './entities/payment.entity';
 import { PaymentsRepository } from './repository/payments.repository';
 import { MercadoPagoService } from './mercadopago.service';
-import { UsersService } from '../users/users.service';
 import { FormatData } from './../../utils/format-data';
 import { v4 } from 'uuid';
-import { UpdatePaymentDto } from './repository/i-payments-repository';
 import { VerifyParams } from 'src/utils/verify-params';
-import { AdvancedSearchDto } from './dto/advanced-search.dto';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     private readonly paymentsRepository: PaymentsRepository,
     private readonly mercadoPagoService: MercadoPagoService,
-    private readonly usersService: UsersService,
     private readonly formatData: FormatData,
     private readonly verifyParams: VerifyParams,
   ) {}
 
   // if exists buyer_id, then create payment with buyer_id
-  async create(
-    createPaymentDto: CreatePaymentDto,
-    buyerId?: number,
-  ): Promise<any> {
-    const user = await this.usersService.findById(createPaymentDto.user_id);
+  async create(createPaymentDto: CreatePaymentDto): Promise<any> {
     const hash = v4();
-    let paymentIdNumber: number;
+    const region = createPaymentDto.region;
     let payment: any = {};
-    let cardToken: any = {};
+    let tokenId: string;
+    let paymentId: number;
+    let transactionAmount = 0;
+    let aditionalData: any = {};
+    const status =
+      createPaymentDto.method === PaymentMethods.presential
+        ? createPaymentDto.status
+        : Status.pending;
 
-    if (user.is_active === false) {
+    if (!region) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'User not found',
+        message: 'Region not found',
       });
     }
 
-    do {
-      paymentIdNumber = Math.floor(1000000000 + Math.random() * 9000000000);
-    } while (await this.paymentsRepository.findByPaymentId(paymentIdNumber));
-
-    if (createPaymentDto.method !== PaymentMethods.presential) {
-      if (createPaymentDto.method === PaymentMethods.credit_card) {
-        const verifyMessage = await this.verifyParams.verifyParamsCreateByCard(
-          createPaymentDto,
-        );
-
-        if (verifyMessage) {
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: verifyMessage,
-          });
-        }
-
-        createPaymentDto.card_info.card_number =
-          createPaymentDto.card_info.card_number.replace(/\s/g, '');
-
-        cardToken = await this.mercadoPagoService
-          .createCardToken(createPaymentDto.card_info)
-          .then((response) => {
-            return response.body;
-          })
-          .catch((error) => {
-            return error;
-          });
-
-        if (cardToken.status === 400) {
-          let causes = '';
-
-          cardToken.cause.forEach((cause: any) => {
-            causes += cause.description + ', ';
-          });
-
-          causes = causes.slice(0, -2);
-
-          throw new NotFoundException({
-            statusCode: HttpStatus.NOT_FOUND,
-            message: causes,
-          });
-        }
-
-        createPaymentDto.token = cardToken.id;
-      }
-
-      const payloadPayment = await this.formatData.formatPaymentPayload(
-        user,
-        createPaymentDto,
-        hash,
-      );
-
-      payment = await this.mercadoPagoService
-        .createPayment(payloadPayment)
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          return error;
-        });
-
-      if (payment.status === 400) {
-        let causes = '';
-
-        payment.cause.forEach((cause: any) => {
-          causes += cause.description + ', ';
-        });
-
-        causes = causes.slice(0, -2);
-
-        throw new NotFoundException({
-          statusCode: HttpStatus.NOT_FOUND,
-          message: causes,
-        });
-      }
-
-      payment.body.status = payment.body.status.toLowerCase().replace('_', '');
-    }
+    transactionAmount = region * createPaymentDto.credits; //  Mudar quando houver a feature de região
+    transactionAmount = 0.55;
 
     if (createPaymentDto.method === PaymentMethods.presential) {
-      const verifyMessage =
-        await this.verifyParams.verifyParamsCreateByPresential(
-          createPaymentDto,
-        );
+      const verify = await this.verifyParams.verifyParamsPresential(
+        createPaymentDto,
+      );
 
-      if (verifyMessage) {
+      if (verify) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
-          message: verifyMessage,
+          message: verify,
         });
+      }
+    } else if (createPaymentDto.method === PaymentMethods.credit_card) {
+      const verify = await this.verifyParams.verifyParamsCard(createPaymentDto);
+
+      if (verify) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: verify,
+        });
+      }
+
+      createPaymentDto.card_info.card_number =
+        createPaymentDto.card_info.card_number.replace(/\s/g, '');
+
+      const token = await this.mercadoPagoService.createCardToken({
+        card_number: createPaymentDto.card_info.card_number,
+        securityCode: createPaymentDto.card_info.securityCode,
+        expiration_month: createPaymentDto.card_info.expiration_month,
+        expiration_year: createPaymentDto.card_info.expiration_year,
+        cardholder: {
+          name: createPaymentDto.card_info.card_holder_name,
+          identification: {
+            type: 'CPF',
+            number: createPaymentDto.card_info.card_holder_cpf,
+          },
+        },
+      });
+
+      if (token.status !== 201) {
+        token.cause.forEach((cause: any) => {
+          delete cause.code;
+        });
+
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: token.cause,
+        });
+      }
+
+      tokenId = token.body.id;
+    }
+
+    const paymentCreated = await this.paymentsRepository.create({
+      amount: transactionAmount,
+      created_at: new Date(),
+      hash,
+      status: status,
+      name: createPaymentDto.name,
+      cpf: createPaymentDto.cpf,
+      credits: createPaymentDto.credits,
+      region: region,
+      license_plate: createPaymentDto.license_plate,
+      description: createPaymentDto.description,
+      method: createPaymentDto.method,
+      buyer_id: createPaymentDto.buyer_id,
+      payment_id: paymentId,
+    });
+
+    if (createPaymentDto.method !== PaymentMethods.presential) {
+      const paymentPayload = await this.formatData.formatPaymentPayload(
+        createPaymentDto,
+        hash,
+        tokenId,
+        transactionAmount,
+        paymentCreated.id,
+      );
+
+      payment = await this.mercadoPagoService.createPayment(paymentPayload);
+
+      if (payment.status === 500) {
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Erro com o Mercado Pago',
+        });
+      }
+
+      if (payment.status !== 201) {
+        payment.cause.forEach((cause: any) => {
+          delete cause.code;
+          delete cause.data;
+        });
+
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: payment.cause,
+        });
+      }
+
+      paymentId = payment.body.id;
+
+      if (createPaymentDto.method === PaymentMethods.pix) {
+        aditionalData = {
+          pix_qr_code:
+            payment.body.point_of_interaction.transaction_data.qr_code,
+          mp_ticket_url:
+            payment.body.point_of_interaction.transaction_data.ticket_url,
+          pix_qr_code_base64:
+            payment.body.point_of_interaction.transaction_data.qr_code_base64,
+        };
       }
     }
 
-    const paymentInfo = {
-      amount: payment.body
-        ? payment.body.transaction_amount
-        : createPaymentDto.amount,
-      created_at: payment.body ? payment.body.date_created : new Date(),
-      payment_id: payment.body
-        ? payment.body.id.toString()
-        : paymentIdNumber.toString(),
-      status: payment.body ? payment.body.status : createPaymentDto.status,
-      method: createPaymentDto.method,
-      description: createPaymentDto.description ?? '',
-      purchase_to_id: user.id,
-      purchase_by_id: buyerId ?? user.id,
-      hash: hash,
+    return {
+      payment: paymentCreated,
+      aditional_data: aditionalData,
     };
-
-    const paymentCreated = await this.paymentsRepository.create(paymentInfo);
-
-    const paymentResponse = {
-      paymentCreated,
-      transactionData: payment.body
-        ? payment.body.point_of_interaction.transaction_data
-        : null,
-    };
-
-    return paymentResponse;
   }
 
-  async update(id: number, updatePaymentDto: UpdatePaymentDto): Promise<any> {
+  async update(
+    id: number,
+    updatePayment: UpdatePaymentInterface,
+  ): Promise<any> {
     const paymentUpdated = await this.paymentsRepository.update(
       id,
-      updatePaymentDto,
+      updatePayment,
     );
 
     return paymentUpdated;
-  }
-
-  async findByPaymentId(paymentId: number, hash: string): Promise<Payment> {
-    const payment = await this.paymentsRepository.findByPaymentId(paymentId);
-
-    if (!payment || payment.hash !== hash) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'Payment not found',
-      });
-    }
-
-    return payment;
   }
 
   async findAll(): Promise<Payment[]> {
@@ -206,8 +197,8 @@ export class PaymentsService {
     return payment;
   }
 
-  async findByUserId(userId: number): Promise<Payment[]> {
-    const payments = await this.paymentsRepository.findByUserId(userId);
+  async findByUser(cpf: string): Promise<Payment[]> {
+    const payments = await this.paymentsRepository.findByUser(cpf);
 
     if (!payments || payments.length === 0) {
       throw new NotFoundException({
@@ -219,61 +210,14 @@ export class PaymentsService {
     return payments;
   }
 
-  async findByBuyerId(buyerId: number): Promise<any[]> {
-    const payments = await this.paymentsRepository.findByBuyerId(buyerId);
+  async findByBuyer(buyerId: number): Promise<any[]> {
+    const payments = await this.paymentsRepository.findByBuyer(buyerId);
 
     if (!payments || payments.length === 0) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
         message: 'Payments not found',
       });
-    }
-
-    return payments;
-  }
-
-  async advancedSearch(
-    userId: number,
-    AdvancedSearchDto: AdvancedSearchDto,
-  ): Promise<Payment[]> {
-    const verifyParams = await this.verifyParams.verifyParamsList(
-      AdvancedSearchDto,
-    );
-
-    if (verifyParams) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: verifyParams,
-      });
-    }
-
-    const payments = await this.paymentsRepository.advancedSearch(
-      userId,
-      AdvancedSearchDto,
-    );
-
-    if (!payments || payments.length === 0) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'Payments not found',
-      });
-    }
-
-    if (AdvancedSearchDto.aditional_info) {
-      for (const payment of payments) {
-        if (payment.method !== PaymentMethods.presential) {
-          await this.mercadoPagoService
-            .getPayment(+payment.payment_id)
-            .then((response) => {
-              payment['aditional_info'] = response.body;
-            })
-            .catch((error) => {
-              payment['aditional_info'] = error;
-            });
-        } else {
-          payment['aditional_info'] = 'No available';
-        }
-      }
     }
 
     return payments;
@@ -283,48 +227,58 @@ export class PaymentsService {
     const paymentId = body.data.id ?? body.resource.split('/').pop();
 
     if (paymentId && hash) {
-      const paymentExists = await this.paymentsRepository.findByPaymentId(
-        paymentId,
-      );
+      const payment = await this.mercadoPagoService.getPayment(paymentId);
+      const status = payment.body.status.toLowerCase().replace('_', ' ');
+      const credits = payment.body.metadata.payment_id;
 
-      if (paymentExists && paymentExists.hash === hash) {
-        const payment = await this.mercadoPagoService.getPayment(paymentId);
-        const paymentStatus = payment.body.status
-          .toLowerCase()
-          .replace('_', '');
+      if (payment.status === 200) {
+        const paymentExists = await this.paymentsRepository.findById(
+          payment.body.metadata.payment_id,
+        );
 
-        if (
-          payment.body &&
-          paymentStatus !== paymentExists.status &&
-          payment.body.external_reference === hash
-        ) {
-          await this.paymentsRepository.update(paymentExists.id, {
-            status: paymentStatus,
-            updated_at: new Date(),
-          });
+        if (paymentExists && paymentExists.hash === hash) {
+          if (status !== Status.pending && status !== paymentExists.status) {
+            const updatePayment = await this.paymentsRepository.update(
+              paymentExists.id,
+              {
+                status: status,
+                payment_id: parseInt(paymentId),
+                updated_at: new Date(),
+              },
+            );
 
-          //  Executar ações de acordo com o status do pagamento
-          if (payment.body.status === 'approved') {
-            console.log('approved');
-          } else if (payment.body.status === 'rejected') {
-            console.log('rejected');
-          } else if (payment.body.status === 'refunded') {
-            console.log('refunded');
-          } else if (payment.body.status === 'cancelled') {
-            console.log('cancelled');
-          } else if (payment.body.status === 'in_process') {
-            console.log('in_process');
-          } else if (payment.body.status === 'in_mediation') {
-            console.log('in_mediation');
-          } else if (payment.body.status === 'charged_back') {
-            console.log('charged_back');
-          } else if (payment.body.status === 'pending') {
-            console.log('pending');
+            if (updatePayment) {
+              if (status === Status.approved) {
+                const valid_until = new Date();
+                valid_until.setHours(valid_until.getHours() + credits);
+
+                await this.paymentsRepository.update(paymentExists.id, {
+                  valid_until: valid_until,
+                  updated_at: new Date(),
+                });
+
+                console.log('approved');
+              } else if (status === Status.rejected) {
+                console.log('rejected');
+              } else if (status === Status.cancelled) {
+                console.log('cancelled');
+              } else if (status === Status.refunded) {
+                console.log('refunded');
+              } else if (status === Status.inprocess) {
+                console.log('in_process');
+              } else if (status === Status.inmediation) {
+                console.log('in_mediation');
+              } else if (status === Status.chargedback) {
+                console.log('charged_back');
+              }
+
+              return {
+                status: 'OK',
+              };
+            }
           }
         }
       }
-
-      return 'ok';
     }
 
     throw new NotFoundException({

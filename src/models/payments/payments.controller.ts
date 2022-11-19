@@ -13,7 +13,6 @@ import { NestResponse } from '../../core/http/nestResponse';
 import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdvancedSearchDto } from './dto/advanced-search.dto';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -23,31 +22,10 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post()
-  async createByUser(
+  async create(
     @Body() createPaymentDto: CreatePaymentDto,
   ): Promise<NestResponse> {
     const createdPayment = await this.paymentsService.create(createPaymentDto);
-
-    const response = new NestResponseBuilder()
-      .setStatus(HttpStatus.CREATED)
-      .setHeaders({ Location: `/payments/${createdPayment.id}` })
-      .setBody(createdPayment)
-      .build();
-
-    return response;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Post('/buyer/:id')
-  async createToUser(
-    @Body() createPaymentDto: CreatePaymentDto,
-    @Param('id') id: number,
-  ): Promise<NestResponse> {
-    const createdPayment = await this.paymentsService.create(
-      createPaymentDto,
-      id,
-    );
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
@@ -88,9 +66,9 @@ export class PaymentsController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get('user/:id')
-  async findByUserId(@Param('id') id: string): Promise<NestResponse> {
-    const payments = await this.paymentsService.findByUserId(+id);
+  @Get('user/:cpf')
+  async findByUser(@Param('cpf') cpf: string): Promise<NestResponse> {
+    const payments = await this.paymentsService.findByUser(cpf);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
@@ -103,28 +81,8 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('buyer/:id')
-  async findByBuyerId(@Param('id') id: string): Promise<NestResponse> {
-    const payments = await this.paymentsService.findByBuyerId(+id);
-
-    const response = new NestResponseBuilder()
-      .setStatus(HttpStatus.OK)
-      .setBody(payments)
-      .build();
-
-    return response;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get('advanced-search/:id')
-  async advancedSearch(
-    @Body() advancedSearchDto: AdvancedSearchDto,
-    @Param('id') id: number,
-  ): Promise<NestResponse> {
-    const payments = await this.paymentsService.advancedSearch(
-      id,
-      advancedSearchDto,
-    );
+  async findByBuyer(@Param('id') id: number): Promise<NestResponse> {
+    const payments = await this.paymentsService.findByBuyer(id);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)

@@ -1,7 +1,6 @@
 import { MercadoPagoService } from './../models/payments/mercadopago.service';
 import { CreatePaymentPayload } from 'mercadopago/models/payment/create-payload.model';
 import { Injectable } from '@nestjs/common';
-import { User } from '../models/users/entities/user.entity';
 import { CreatePaymentDto } from 'src/models/payments/dto/create-payment.dto';
 
 @Injectable()
@@ -9,48 +8,54 @@ export class FormatData {
   constructor(private readonly mercadoPagoService: MercadoPagoService) {}
 
   async formatPaymentPayload(
-    user: User,
     paymentPayload: CreatePaymentDto,
     hash: string,
+    token: string,
+    transactionAmount: number,
+    paymentId: number,
   ): Promise<CreatePaymentPayload> {
-    let payment_method_id = paymentPayload.method;
-
-    if (paymentPayload.method === 'credit_card') {
-      payment_method_id = paymentPayload.card_info.card_brand;
-    }
-
-    const paymentPayloadFormatted: CreatePaymentPayload = {
-      transaction_amount: paymentPayload.amount,
+    const payment: CreatePaymentPayload = {
       payer: {
-        first_name: user.name.split(' ')[0],
-        last_name: user.name.split(' ').pop(),
-        email: user.email,
+        first_name: paymentPayload.name.split(' ')[0],
+        last_name: paymentPayload.name.split(' ').pop(),
+        email: paymentPayload.email,
         identification: {
           type: 'CPF',
-          number: user.cpf,
+          number: paymentPayload.cpf,
         },
       },
-      description: paymentPayload.description || 'Pagamento',
-      payment_method_id,
+      transaction_amount: transactionAmount,
+      payment_method_id: '',
+      token: token,
+      installments: 1,
+      description: paymentPayload.description || 'Compra de créditos',
       external_reference: hash,
       notification_url: `${process.env.APP_URL}/payments/notifications/${hash}`,
-      installments: paymentPayload.installments || 1,
       additional_info: {
         items: paymentPayload.items,
         payer: {
-          first_name: user.name.split(' ')[0],
-          last_name: user.name.split(' ').pop(),
+          first_name: paymentPayload.name.split(' ')[0],
+          last_name: paymentPayload.name.split(' ').pop(),
           address: paymentPayload.user_address,
           phone: paymentPayload.user_phone,
         },
       },
       metadata: {
-        hash: hash,
-        user_id: user.id,
+        payment_id: paymentId,
+        cpf: paymentPayload.cpf,
+        license_plate: paymentPayload.license_plate,
+        credits: paymentPayload.credits,
+        region: paymentPayload.region,
       },
-      token: paymentPayload.token ?? '',
     };
 
-    return paymentPayloadFormatted;
+    if (paymentPayload.method === 'credit_card') {
+      payment.payment_method_id = paymentPayload.card_info.card_brand;
+      payment.installments = paymentPayload.installments;
+    } else {
+      payment.payment_method_id = paymentPayload.method;
+    }
+
+    return payment;
   }
 }

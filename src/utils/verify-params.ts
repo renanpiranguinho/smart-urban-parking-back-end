@@ -1,126 +1,93 @@
 import { Injectable } from '@nestjs/common';
-import { AdvancedSearchDto } from 'src/models/payments/dto/advanced-search.dto';
-import {
-  CreatePaymentDto,
-  PaymentMethods,
-} from 'src/models/payments/dto/create-payment.dto';
+import { CreatePaymentDto } from 'src/models/payments/dto/create-payment.dto';
 import { Status } from '@prisma/client';
+import { CardBrands } from 'src/models/payments/enums/card-brands.enum';
 
 @Injectable()
 export class VerifyParams {
-  async verifyParamsCreateByCard(
-    createPaymentDto: CreatePaymentDto,
-  ): Promise<string> {
+  async verifyParamsCard(createPaymentDto: CreatePaymentDto): Promise<string> {
+    if (!createPaymentDto.card_info) {
+      return 'card_info is required';
+    }
+
     if (!createPaymentDto.card_info.card_number) {
-      return 'Card number is required';
+      return 'card_number is required';
     }
 
     if (typeof createPaymentDto.card_info.card_number !== 'string') {
-      return 'Card number must be a string';
+      return 'card_number must be a string';
     }
 
-    if (!createPaymentDto.card_info.securityCode) {
-      return 'Security code is required';
+    if (!createPaymentDto.card_info.card_brand) {
+      return 'card_brand is required';
     }
 
-    if (typeof createPaymentDto.card_info.securityCode !== 'string') {
-      return 'Security code must be a string';
+    if (CardBrands[createPaymentDto.card_info.card_brand] === undefined) {
+      return 'card_brand is not valid';
     }
 
     if (!createPaymentDto.card_info.expiration_month) {
-      return 'Expiration month is required';
+      return 'expiration_month is required';
     }
 
     if (typeof createPaymentDto.card_info.expiration_month !== 'number') {
-      return 'Expiration month must be a number';
+      return 'expiration_month must be a number';
     }
 
     if (!createPaymentDto.card_info.expiration_year) {
-      return 'Expiration year is required';
+      return 'expiration_year is required';
     }
 
     if (typeof createPaymentDto.card_info.expiration_year !== 'number') {
-      return 'Expiration year must be a number';
+      return 'expiration_year must be a number';
     }
 
-    if (!createPaymentDto.installments) {
-      return 'Installments is required';
+    if (!createPaymentDto.card_info.securityCode) {
+      return 'securityCode is required';
     }
 
-    if (typeof createPaymentDto.installments !== 'number') {
-      return 'Installments must be a number';
+    if (typeof createPaymentDto.card_info.securityCode !== 'string') {
+      return 'securityCode must be a string';
     }
 
-    if (createPaymentDto.installments < 1) {
-      return 'Installments must be greater than 0';
-    }
-  }
-
-  async verifyParamsCreateByPresential(
-    createPaymentDto: CreatePaymentDto,
-  ): Promise<string> {
-    if (!createPaymentDto.status) {
-      return 'Status is required';
+    if (!createPaymentDto.card_info.card_holder_name) {
+      return 'holder_name is required';
     }
 
-    if (typeof createPaymentDto.status !== 'string') {
-      return 'Status must be a string';
+    if (typeof createPaymentDto.card_info.card_holder_name !== 'string') {
+      return 'holder_name must be a string';
     }
 
-    if (!Object.values(Status).includes(createPaymentDto.status)) {
-      return 'Status must be a valid status';
+    if (!createPaymentDto.card_info.card_holder_cpf) {
+      return 'holder_cpf is required';
+    }
+
+    if (typeof createPaymentDto.card_info.card_holder_cpf !== 'string') {
+      return 'holder_cpf must be a string';
     }
 
     return;
   }
 
-  async verifyParamsList(
-    advancedSearchDto: AdvancedSearchDto,
+  async verifyParamsPresential(
+    createPaymentDto: CreatePaymentDto,
   ): Promise<string> {
-    if (advancedSearchDto.id && typeof advancedSearchDto.id !== 'number') {
-      return 'Id must be a number';
+    if (!createPaymentDto.buyer_id) {
+      return 'buyer_id is required';
     }
 
-    if (
-      advancedSearchDto.payment_id &&
-      typeof advancedSearchDto.payment_id !== 'string'
-    ) {
-      return 'Payment id must be a string';
+    if (typeof createPaymentDto.buyer_id !== 'number') {
+      return 'buyer_id must be a number';
     }
 
-    if (
-      advancedSearchDto.buyer_id &&
-      typeof advancedSearchDto.buyer_id !== 'number'
-    ) {
-      return 'Purchase to id must be a number';
+    if (!createPaymentDto.status) {
+      return 'status is required';
     }
 
-    if (
-      advancedSearchDto.status &&
-      typeof advancedSearchDto.status !== 'string'
-    ) {
-      return 'Status must be a string';
+    if (Status[createPaymentDto.status] === undefined) {
+      return 'status is invalid';
     }
 
-    if (
-      advancedSearchDto.status &&
-      !Object.values(Status).includes(advancedSearchDto.status)
-    ) {
-      return 'Status must be a valid status';
-    }
-
-    if (
-      advancedSearchDto.method &&
-      typeof advancedSearchDto.method !== 'string'
-    ) {
-      return 'Method must be a string';
-    }
-
-    if (
-      advancedSearchDto.method &&
-      !Object.values(PaymentMethods).includes(advancedSearchDto.method)
-    ) {
-      return 'Method must be a valid method';
-    }
+    return;
   }
 }

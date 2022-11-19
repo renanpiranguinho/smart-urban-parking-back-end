@@ -1,37 +1,12 @@
-import { AdvancedSearchDto } from './../dto/advanced-search.dto';
+import { UpdatePaymentInterface } from './../interfaces/update-payment.interface';
 import { Payment } from '../entities/payment.entity';
-import { Status } from '@prisma/client';
-
-export interface CreatePaymentDto {
-  amount: number;
-  created_at: Date;
-  updated_at?: Date;
-  status: Status;
-  method: string;
-  description?: string;
-
-  purchase_by_id: number;
-  purchase_to_id: number;
-
-  payment_id: string;
-  hash: string;
-}
-
-export interface UpdatePaymentDto {
-  payment_id?: string;
-  updated_at: Date;
-  status?: Status;
-}
+import { CreatePaymentInterface } from '../interfaces/create-payment.interface';
 
 export interface IPaymentsRepository {
-  create(createPaymentDto: CreatePaymentDto): Promise<any>;
-  update(id: number, updatePaymentDto: UpdatePaymentDto): Promise<any>;
+  create(createPayment: CreatePaymentInterface): Promise<any>;
+  update(id: number, updatePayment: UpdatePaymentInterface): Promise<any>;
   findById(id: number): Promise<Payment>;
-  findByUserId(userId: number): Promise<Payment[]>;
-  findByBuyerId(buyerId: number): Promise<Payment[]>;
+  findByUser(cpf: string): Promise<Payment[]>;
+  findByBuyer(buyerId: number): Promise<Payment[]>;
   findAll(): Promise<Payment[]>;
-  advancedSearch(
-    userId: number,
-    advancedSearchDto: AdvancedSearchDto,
-  ): Promise<Payment[]>;
 }

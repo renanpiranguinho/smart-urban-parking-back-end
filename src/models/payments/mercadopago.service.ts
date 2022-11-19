@@ -1,7 +1,7 @@
+import { TokenCardInfo } from './interfaces/token-card-info.interface';
 import mercadopago from 'mercadopago';
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentPayload } from 'mercadopago/models/payment/create-payload.model';
-import { CardInfo } from './dto/create-payment.dto';
 
 @Injectable()
 export class MercadoPagoService {
@@ -16,14 +16,35 @@ export class MercadoPagoService {
   async createPayment(
     createPaymentPayload: CreatePaymentPayload,
   ): Promise<any> {
-    return await mercadopago.payment.create(createPaymentPayload);
+    return await mercadopago.payment
+      .create(createPaymentPayload)
+      .then((response: any) => {
+        return response;
+      })
+      .catch((error: any) => {
+        return error;
+      });
   }
 
-  async createCardToken(cardInfo: CardInfo): Promise<any> {
-    return await mercadopago.card_token.create(cardInfo);
+  async createCardToken(cardInfo: TokenCardInfo): Promise<any> {
+    return await mercadopago.card_token
+      .create(cardInfo)
+      .then((response: any) => {
+        return response;
+      })
+      .catch((error: any) => {
+        return error;
+      });
   }
 
   async getPayment(id: number): Promise<any> {
-    return await mercadopago.payment.get(id);
+    return await mercadopago.payment
+      .get(id)
+      .then((response: any) => {
+        return response;
+      })
+      .catch((error: any) => {
+        return error;
+      });
   }
 }

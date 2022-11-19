@@ -1,10 +1,10 @@
+import { JwtModule } from '@nestjs/jwt';
 import { FormatData } from './../../utils/format-data';
 import { Module } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { PrismaService } from '../../prisma/prisma.service';
-import { JwtModule } from '@nestjs/jwt';
-import { EncryptData } from '../../utils/encrypt-data';
+
 import { BullModule } from '@nestjs/bull';
 import { PaymentsRepository } from './repository/payments.repository';
 import { GenerateToken } from 'src/providers/generate-token';
@@ -14,6 +14,7 @@ import { UsersRepository } from '../users/repository/user.repository';
 import { MercadoPagoService } from './mercadopago.service';
 import { UsersService } from '../users/users.service';
 import { VerifyParams } from 'src/utils/verify-params';
+import { EncryptData } from 'src/utils/encrypt-data';
 
 @Module({
   imports: [
@@ -30,12 +31,13 @@ import { VerifyParams } from 'src/utils/verify-params';
     PaymentsService,
     PaymentsController,
     PrismaService,
-    EncryptData,
     UsersRepository,
     PaymentsRepository,
     GenerateToken,
     AuthService,
     SendMailService,
+    JwtModule,
+    EncryptData,
     MercadoPagoService,
     UsersService,
     FormatData,

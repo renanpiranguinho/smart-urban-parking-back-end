@@ -1,87 +1,54 @@
+import { CardInfo } from '../interfaces/create-card-info.interface';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { PaymentItem } from 'mercadopago/models/payment/create-payload.model';
 import { SimpleAddress } from 'mercadopago/shared/address';
 import { Phone } from 'mercadopago/shared/phone';
 import { Status } from '@prisma/client';
-
-export enum PaymentMethods {
-  credit_card = 'credit_card',
-  bolbradesco = 'bolbradesco',
-  pix = 'pix',
-  presential = 'presential',
-}
-
-export enum CardBrands {
-  visa = 'visa',
-  elo = 'elo',
-  amex = 'amex',
-  hipercard = 'hipercard',
-  master = 'master',
-  debelo = 'debelo',
-}
-
-export interface CardInfo {
-  card_number: string;
-  card_holder: {
-    name: string;
-    identification: {
-      type: string;
-      number: string;
-    };
-  };
-  securityCode: string;
-  expiration_month: number;
-  expiration_year: number;
-  card_brand: CardBrands;
-}
+import { PaymentMethods } from '../enums/payment-method.enum';
 
 export class CreatePaymentDto {
-  @IsNotEmpty({
-    message: 'user_id is required',
-  })
-  @IsNumber(
-    {},
-    {
-      message: 'user_id must be a number',
-    },
-  )
-  user_id: number;
+  @IsNotEmpty({ message: 'name is required' })
+  @IsString({ message: 'name must be a string' })
+  name: string;
 
-  @IsNotEmpty({
-    message: 'method is required',
-  })
-  @IsString({
-    message: 'method must be a string',
-  })
-  @IsEnum(PaymentMethods, {
-    message: 'method must be a valid payment method',
-  })
-  method: string;
+  @IsNotEmpty({ message: 'cpf is required' })
+  @IsString({ message: 'cpf must be a string' })
+  cpf: string;
 
-  card_info?: CardInfo;
+  @IsNotEmpty({ message: 'email is required' })
+  @IsString({ message: 'email must be a string' })
+  email: string;
 
-  token?: string;
+  @IsNotEmpty({ message: 'region is required' })
+  @IsNumber({}, { message: 'region must be a number' })
+  region: number;
 
-  status?: Status;
+  @IsNotEmpty({ message: 'license_plate is required' })
+  @IsString({ message: 'license_plate must be a string' })
+  license_plate: string;
 
-  installments?: number;
+  @IsNotEmpty({ message: 'credits is required' })
+  @IsNumber({}, { message: 'credits must be a number' })
+  credits: number;
 
   description?: string;
 
-  @IsNotEmpty({
-    message: 'amount is required',
-  })
-  @IsNumber(
-    {},
-    {
-      message: 'amount must be a number',
-    },
-  )
-  amount: number;
+  @IsNotEmpty({ message: 'method is required' })
+  @IsEnum(PaymentMethods, { message: 'method must be a valid payment method' })
+  method: PaymentMethods;
 
-  items?: PaymentItem[];
+  status?: Status; //  Obrigatorio caso seja comprado por um fiscal
+  valid_until?: Date;
 
-  user_phone?: Phone;
+  // Compra por fiscal
+  buyer_id?: number; //  Obrigatorio caso seja comprado por um fiscal
 
-  user_address?: SimpleAddress;
+  // Cartão de crédito
+  card_info?: CardInfo; //  Obrigatório (caso o método de pagamento seja cartão de crédito)
+  installments?: number; //  Obrigatório (caso o método de pagamento seja cartão de crédito)
+  user_phone?: Phone; //  Opicional (caso o método de pagamento seja cartão de crédito)
+  user_address?: SimpleAddress; //  Opicional (caso o método de pagamento seja cartão de crédito)
+
+  // Para visualização do que foi comprado (mercado pago)
+  items?: PaymentItem[]; //  Opicional
 }
