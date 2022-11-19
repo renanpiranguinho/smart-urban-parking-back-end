@@ -9,6 +9,14 @@ export class CreateCreditCardDto {
   ownerId: number;
 
   @IsNotEmpty({
+    message: 'Credit card flag empty',
+  })
+  @IsString({
+    message: 'Invalid credit card flag',
+  })
+  flag: string;
+
+  @IsNotEmpty({
     message: 'Credit card number empty',
   })
   @IsString({

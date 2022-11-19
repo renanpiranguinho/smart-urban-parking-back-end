@@ -11,6 +11,7 @@ export class CreditCardsRepository implements ICreditCardsRepository {
 
   async create({
     ownerId,
+    flag,
     number,
     expirationMonth,
     expirationYear,
@@ -19,12 +20,14 @@ export class CreditCardsRepository implements ICreditCardsRepository {
     const newCard = await this.prismaService.creditCard.create({
       data: {
         ownerId,
+        flag,
         number,
         expirationMonth,
         expirationYear,
         cvc,
       },
     });
+
     return newCard;
   }
 
@@ -60,6 +63,7 @@ export class CreditCardsRepository implements ICreditCardsRepository {
     id: number,
     {
       ownerId,
+      flag,
       number,
       expirationMonth,
       expirationYear,
@@ -70,6 +74,7 @@ export class CreditCardsRepository implements ICreditCardsRepository {
       where: { id },
       data: {
         ownerId,
+        flag,
         number,
         expirationMonth,
         expirationYear,

@@ -1,7 +1,7 @@
 export class CreditCard {
   id: number;
   ownerId: number;
-
+  flag: string;
   number: string;
   expirationMonth: number;
   expirationYear: number;
