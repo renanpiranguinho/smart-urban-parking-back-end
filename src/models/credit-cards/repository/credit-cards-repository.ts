@@ -42,6 +42,13 @@ export class CreditCardsRepository implements ICreditCardsRepository {
     return cardFound;
   }
 
+  async findByUserId(userId: number): Promise<CreditCard[]> {
+    const allCards = await this.prismaService.creditCard.findMany({
+      where: { deleted_at: null, ownerId: userId },
+    });
+    return allCards;
+  }
+
   async findAll(): Promise<CreditCard[]> {
     const allCards = await this.prismaService.creditCard.findMany({
       where: { deleted_at: null },

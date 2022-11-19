@@ -64,6 +64,12 @@ export class CreditCardsService {
     return new CreditCard(card);
   }
 
+  async findByUserId(ownerId: number): Promise<CreditCard[]> {
+    const allCards = await this.cardsRepository.findByUserId(ownerId);
+
+    return allCards.map((card) => new CreditCard(card));
+  }
+
   async findById(id: number): Promise<CreditCard> {
     const card = await this.cardsRepository.findById(id);
 

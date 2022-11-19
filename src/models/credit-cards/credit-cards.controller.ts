@@ -59,6 +59,19 @@ export class CreditCardsController {
   }
 
   @ApiBearerAuth()
+  @Get('user/:userId')
+  async findAllByUser(@Param('userId') id: number): Promise<NestResponse> {
+    const allCards = await this.creditCardsService.findByUserId(id);
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(allCards)
+      .build();
+
+    return response;
+  }
+
+  @ApiBearerAuth()
   @Patch(':id')
   async update(
     @Param('id') id: number,

@@ -6,6 +6,7 @@ export interface ICreditCardsRepository {
   create(createCreditCardDto: CreateCreditCardDto): Promise<CreditCard>;
   findByNumber(ownerId: number, number: string): Promise<CreditCard>;
   findById(id: number): Promise<CreditCard>;
+  findByUserId(usedId: number): Promise<CreditCard[]>;
   findAll(): Promise<CreditCard[]>;
   updateById(
     id: number,
