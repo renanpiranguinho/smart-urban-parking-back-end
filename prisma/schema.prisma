@@ -42,3 +42,37 @@ enum Role {
   FISCAL
   ADMIN
 }
+
+enum Status {
+  pending
+  approved
+  inprocess
+  inmediation
+  rejected
+  cancelled
+  refunded
+  chargedback
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  name          String
+  cpf           String
+  credits       Int
+  region        Int
+  amount        Float
+  license_plate String
+  description   String?
+  method        String
+  status        Status   @default(pending)
+  created_at    DateTime @default(now())
+  updated_at    DateTime? @updatedAt()
+  valid_until   DateTime?
+
+  //  Fiscal
+  buyer_id      Int?   
+
+  //  Mercado Pago
+  payment_id    Int?
+  hash          String
+}

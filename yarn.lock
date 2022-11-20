@@ -686,7 +686,7 @@
 
 "@nestjs-modules/mailer@^1.8.1":
   version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@nestjs-modules/mailer/-/mailer-1.8.1.tgz#cb4cfbf3bbf1cfe325122b7be1c3a772ba08e478"
+  resolved "https://registry.npmjs.org/@nestjs-modules/mailer/-/mailer-1.8.1.tgz"
   integrity sha512-rNlKzNB+Vr/aRDVcTibj2JCJQcTSE59EBQIpCwh/FkKg0Be1xoF3dQDZ4dmc9X1j396fkIBI5aQ5XAtJNPdxpw==
   dependencies:
     glob "8.0.3"
@@ -1090,6 +1090,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/mercadopago@^1.5.8":
+  version "1.5.8"
+  resolved "https://registry.npmjs.org/@types/mercadopago/-/mercadopago-1.5.8.tgz"
+  integrity sha512-tamrRo4Z5IfLmWXDm72l7egxzQzhM5sJJtSH7n1z4EJsS71T0PddybGMZmMJp5GRiNJhbc9Ts6ZxIJ2jfxzM9Q==
+
 "@types/mime@*":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@types/mime/-/mime-3.0.1.tgz"
@@ -1197,6 +1202,11 @@
   integrity sha512-X3HPWTwXRerBZS7Mo1k6vMVR1Z6zmJcDVn5O/31whe0tnjE4te6ZJSJGq1RiqHPjzPdMTfjCFogDJmwng9xHaQ==
   dependencies:
     "@types/superagent" "*"
+
+"@types/uuid@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.4.tgz"
+  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 "@types/yargs-parser@*":
   version "21.0.0"
@@ -1863,7 +1873,7 @@ buffer@^5.5.0:
 
 bull@^4.10.1:
   version "4.10.1"
-  resolved "https://registry.yarnpkg.com/bull/-/bull-4.10.1.tgz#f14974b6089358b62b495a2cbf838aadc098e43f"
+  resolved "https://registry.npmjs.org/bull/-/bull-4.10.1.tgz"
   integrity sha512-Fp21tRPb2EaZPVfmM+ONZKVz2RA+to+zGgaTLyCKt3JMSU8OOBqK8143OQrnGuGpsyE5G+9FevFAGhdZZfQP2g==
   dependencies:
     cron-parser "^4.2.1"
