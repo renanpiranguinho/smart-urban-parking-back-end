@@ -76,3 +76,12 @@ model Payment {
   payment_id    Int?
   hash          String
 }
+
+model Region {
+  id            Int      @id @default(autoincrement())
+  latitude      Float
+  longitude     Float
+  region        String
+  price         Float
+  parking_lots  Int
+}
