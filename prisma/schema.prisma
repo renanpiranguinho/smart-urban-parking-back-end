@@ -22,6 +22,7 @@ model User {
   updated_at DateTime     @updatedAt()
   deleted_at DateTime?
   cards      CreditCard[]
+  vehicles   UserVehicles[]
 }
 
 model CreditCard {
@@ -35,6 +36,25 @@ model CreditCard {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt()
   deleted_at      DateTime?
+}
+
+model Vehicle {
+  id            Int            @id @default(autoincrement())
+  name          String
+  license_plate String         
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt()
+  users         UserVehicles[]
+}
+
+model UserVehicles {
+  vehicle    Vehicle  @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
+  vehicle_id Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  created_at DateTime @default(now())
+
+  @@id([vehicle_id, user_id])
 }
 
 enum Role {
