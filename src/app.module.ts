@@ -1,3 +1,4 @@
+import { VehicleModule } from './models/cars/vehicles.module';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -20,6 +21,7 @@ import { RegionsModule } from './models/region/regions.module';
     PaymentsModule,
     SendMailModule,
     CreditCardsModule,
+    VehicleModule,
     RegionsModule,
   ],
   providers: [
