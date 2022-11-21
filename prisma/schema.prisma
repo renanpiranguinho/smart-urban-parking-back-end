@@ -48,9 +48,9 @@ model Vehicle {
 }
 
 model UserVehicles {
-  vehicle    Vehicle  @relation(fields: [vehicle_id], references: [id])
+  vehicle    Vehicle  @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
   vehicle_id Int
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int
   created_at DateTime @default(now())
 
