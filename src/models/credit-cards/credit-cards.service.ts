@@ -15,6 +15,7 @@ export class CreditCardsService {
 
   async create({
     ownerId,
+    cardName,
     flag,
     number,
     expirationMonth,
@@ -35,6 +36,7 @@ export class CreditCardsService {
 
     const newCreditCard = await this.cardsRepository.create({
       ownerId,
+      cardName,
       flag,
       number,
       expirationMonth,

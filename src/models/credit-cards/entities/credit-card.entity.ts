@@ -1,6 +1,7 @@
 export class CreditCard {
   id: number;
   ownerId: number;
+  cardName: string;
   flag: string;
   number: string;
   expirationMonth: number;

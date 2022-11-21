@@ -12,6 +12,14 @@ export class UpdateCreditCardDto extends PartialType(CreateCreditCardDto) {
   flag?: string;
 
   @IsNotEmpty({
+    message: 'Credit card name empty',
+  })
+  @IsString({
+    message: 'Invalid credit card name',
+  })
+  cardName?: string;
+
+  @IsNotEmpty({
     message: 'Credit card number empty',
   })
   @IsString({
