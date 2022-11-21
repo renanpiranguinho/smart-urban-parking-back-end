@@ -43,13 +43,13 @@ export class VehiclesService {
       });
     }
 
-    const newCar = await this.vehicleRepository.create({
+    const newVehicle = await this.vehicleRepository.create({
       owner_id,
       name,
       license_plate,
     });
 
-    return new Vehicle(newCar);
+    return new Vehicle(newVehicle);
   }
 
   async findAll() {
@@ -118,12 +118,6 @@ export class VehiclesService {
     const vehiclePlateExists = await this.vehicleRepository.findByLicense(
       license_plate,
     );
-    if (vehiclePlateExists && vehiclePlateExists.id !== id) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'License plate already exists',
-      });
-    }
 
     const ownerExists = await this.userRepository.findById(owner_id);
     if (!ownerExists) {
@@ -131,6 +125,18 @@ export class VehiclesService {
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'Owner is not found',
       });
+    }
+
+    if (vehiclePlateExists) {
+      if (!owner_id) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'License plate already exists',
+        });
+      }
+      if (vehiclePlateExists.users.find((u) => u.user_id == owner_id)) {
+        owner_id = undefined;
+      }
     }
 
     const vehicleUpdated = await this.vehicleRepository.updateById(id, {

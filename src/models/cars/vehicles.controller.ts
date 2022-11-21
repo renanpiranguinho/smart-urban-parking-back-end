@@ -105,9 +105,12 @@ export class VehiclesController {
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateCarDto: UpdateVehicleDto,
+    @Body() updateVehicleDto: UpdateVehicleDto,
   ): Promise<NestResponse> {
-    const updatedVehicle = await this.vehiclesService.update(id, updateCarDto);
+    const updatedVehicle = await this.vehiclesService.update(
+      id,
+      updateVehicleDto,
+    );
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
       .setHeaders({ Location: `/cars/${updatedVehicle.id}` })

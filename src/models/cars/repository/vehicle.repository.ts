@@ -4,6 +4,11 @@ import { Vehicle } from '../entities/vehicle.entity';
 import { CreateVehicleDto } from '../dto/create-vehicle.dto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { UserVehicles } from '.prisma/client';
+
+export type VehicleResponse = Vehicle & {
+  users: UserVehicles[];
+};
 
 @Injectable()
 export class VehicleRepository implements IVehicleRepository {
@@ -15,7 +20,7 @@ export class VehicleRepository implements IVehicleRepository {
     license_plate,
   }: CreateVehicleDto): Promise<Vehicle> {
     let newVehicle: Vehicle;
-    console.log(owner_id);
+
     if (owner_id) {
       newVehicle = await this.prismaService.vehicle.create({
         data: {
@@ -34,12 +39,18 @@ export class VehicleRepository implements IVehicleRepository {
             ],
           },
         },
+        include: {
+          users: true,
+        },
       });
     } else {
       newVehicle = await this.prismaService.vehicle.create({
         data: {
           name,
           license_plate,
+        },
+        include: {
+          users: true,
         },
       });
     }
@@ -50,18 +61,24 @@ export class VehicleRepository implements IVehicleRepository {
   async findById(id: number): Promise<Vehicle> {
     const carFound = await this.prismaService.vehicle.findFirst({
       where: { id },
+      include: {
+        users: true,
+      },
     });
 
     return carFound;
   }
 
-  async findByLicense(license_plate: string): Promise<Vehicle> {
+  async findByLicense(license_plate: string): Promise<VehicleResponse> {
     const carFound = await this.prismaService.vehicle.findFirst({
       where: {
         license_plate,
         users: {
           some: {},
         },
+      },
+      include: {
+        users: true,
       },
     });
 
@@ -76,6 +93,9 @@ export class VehicleRepository implements IVehicleRepository {
             user_id: owner_id,
           },
         },
+      },
+      include: {
+        users: true,
       },
     });
 
@@ -92,22 +112,53 @@ export class VehicleRepository implements IVehicleRepository {
 
   async updateById(
     id: number,
-    { license_plate, name }: UpdateVehicleDto,
+    { owner_id, license_plate, name }: UpdateVehicleDto,
   ): Promise<Vehicle> {
-    const updatedCar = await this.prismaService.vehicle.update({
-      where: { id },
-      data: {
-        license_plate,
-        name,
-      },
-    });
-
+    let updatedCar: Vehicle;
+    if (owner_id) {
+      updatedCar = await this.prismaService.vehicle.update({
+        where: { id },
+        data: {
+          name,
+          license_plate,
+          users: {
+            create: [
+              {
+                created_at: new Date(),
+                user: {
+                  connect: {
+                    id: owner_id,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
+    } else {
+      updatedCar = await this.prismaService.vehicle.update({
+        where: { id },
+        data: {
+          name,
+          license_plate,
+        },
+        include: {
+          users: true,
+        },
+      });
+    }
     return updatedCar;
   }
 
   async delete(id: number): Promise<Vehicle> {
     const deletedCar = await this.prismaService.vehicle.delete({
       where: { id },
+      include: {
+        users: true,
+      },
     });
 
     return deletedCar;
