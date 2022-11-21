@@ -1,4 +1,4 @@
-import { CarsModule } from './models/cars/cars.module';
+import { VehicleModule } from './models/cars/vehicles.module';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -20,7 +20,7 @@ import { PaymentsModule } from './models/payments/payments.module';
     PaymentsModule,
     SendMailModule,
     CreditCardsModule,
-    CarsModule,
+    VehicleModule,
   ],
   providers: [
     PrismaService,

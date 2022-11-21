@@ -1,7 +1,7 @@
-import { IUserRequestData } from './../../auth/auth.controller';
-import { JwtAuthGuard } from './../../guards/jwt.guard';
-import { NestResponseBuilder } from './../../core/http/nestResponseBuilder';
-import { NestResponse } from './../../core/http/nestResponse';
+import { IUserRequestData } from '../../auth/auth.controller';
+import { JwtAuthGuard } from '../../guards/jwt.guard';
+import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
+import { NestResponse } from '../../core/http/nestResponse';
 import {
   Controller,
   Get,
@@ -14,32 +14,32 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { CarsService } from './cars.service';
-import { CreateCarDto } from './dto/create-car.dto';
-import { UpdateCarDto } from './dto/update-car.dto';
+import { VehiclesService } from './vehicles.service';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Role } from '../users/enums/role.enum';
 import { Roles } from 'src/decorators/roles.decorator';
+import { CreateVehicleDto } from './dto/create-vehicle.dto';
+import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 
 export interface IFindCarRequestData {
   license_plate: string;
 }
 @UseGuards(RolesGuard)
-@Controller('cars')
-export class CarsController {
-  constructor(private readonly carsService: CarsService) {}
+@Controller('vehicles')
+export class VehiclesController {
+  constructor(private readonly vehiclesService: VehiclesService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Req() { user }: IUserRequestData,
-    @Body() createCarDto: CreateCarDto,
+    @Body() createVehicleDto: CreateVehicleDto,
   ): Promise<NestResponse> {
-    const newCar = await this.carsService.create(user.id, createCarDto);
+    const newVehicle = await this.vehiclesService.create(createVehicleDto);
+
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
-      .setHeaders({ Location: `/cars/${newCar.id}` })
-      .setBody(newCar)
+      .setHeaders({ Location: `/vehicles/${newVehicle.id}` })
+      .setBody(newVehicle)
       .build();
 
     return response;
@@ -49,22 +49,24 @@ export class CarsController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<NestResponse> {
-    const allCars = await this.carsService.findAll();
+    const allVehicles = await this.vehiclesService.findAll();
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(allCars)
+      .setBody(allVehicles)
       .build();
 
     return response;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/mycars')
-  async findMyCars(@Req() { user }: IUserRequestData): Promise<NestResponse> {
-    const carFound = await this.carsService.findByOwner(user.id);
+  @Get('/myVehicles')
+  async findMyVehicles(
+    @Req() { user }: IUserRequestData,
+  ): Promise<NestResponse> {
+    const vehicleFound = await this.vehiclesService.findByOwner(user.id);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(carFound)
+      .setBody(vehicleFound)
       .build();
 
     return response;
@@ -74,9 +76,9 @@ export class CarsController {
   @UseGuards(JwtAuthGuard)
   @Get('/find/:id')
   async findById(@Param('id') id: number): Promise<NestResponse> {
-    const carFound = this.carsService.findById(id);
+    const vehicleFound = this.vehiclesService.findById(id);
     const response = new NestResponseBuilder()
-      .setBody(carFound)
+      .setBody(vehicleFound)
       .setStatus(HttpStatus.OK)
       .build();
 
@@ -89,10 +91,12 @@ export class CarsController {
   async findByLicensePlate(
     @Body() data: IFindCarRequestData,
   ): Promise<NestResponse> {
-    const carFound = await this.carsService.findByLicense(data.license_plate);
+    const vehicleFound = await this.vehiclesService.findByLicense(
+      data.license_plate,
+    );
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(carFound)
+      .setBody(vehicleFound)
       .build();
     return response;
   }
@@ -101,13 +105,13 @@ export class CarsController {
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateCarDto: UpdateCarDto,
+    @Body() updateCarDto: UpdateVehicleDto,
   ): Promise<NestResponse> {
-    const updatedCar = await this.carsService.update(id, updateCarDto);
+    const updatedVehicle = await this.vehiclesService.update(id, updateCarDto);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setHeaders({ Location: `/cars/${updatedCar.id}` })
-      .setBody(updatedCar)
+      .setHeaders({ Location: `/cars/${updatedVehicle.id}` })
+      .setBody(updatedVehicle)
       .build();
 
     return response;
@@ -116,10 +120,10 @@ export class CarsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<NestResponse> {
-    const deletedCar = await this.carsService.remove(id);
+    const deletedVehicle = await this.vehiclesService.remove(id);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
-      .setBody(deletedCar)
+      .setBody(deletedVehicle)
       .build();
 
     return response;

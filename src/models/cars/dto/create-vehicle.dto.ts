@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateCarDto {
+export class CreateVehicleDto {
   owner_id?: number;
 
-  @IsNotEmpty({ message: 'Car name is not found' })
+  @IsNotEmpty({ message: 'Vehicle name is not found' })
   @IsString({ message: 'Name format is invalid' })
   name: string;
 

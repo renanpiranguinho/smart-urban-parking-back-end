@@ -1,39 +1,35 @@
-import { Car } from './entities/car.entity';
-import { CarRepository } from './repository/car.repository';
+import { Vehicle } from './entities/vehicle.entity';
+import { VehicleRepository } from './repository/vehicle.repository';
 import {
   Injectable,
   BadRequestException,
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCarDto } from './dto/create-car.dto';
-import { UpdateCarDto } from './dto/update-car.dto';
+import { CreateVehicleDto } from './dto/create-vehicle.dto';
+import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { UsersRepository } from '../users/repository/user.repository';
 
 @Injectable()
-export class CarsService {
+export class VehiclesService {
   constructor(
-    private readonly carRepository: CarRepository,
+    private readonly vehicleRepository: VehicleRepository,
     private readonly userRepository: UsersRepository,
   ) {}
 
-  async create(
-    owner_id: number,
-    { name, license_plate }: CreateCarDto,
-  ): Promise<Car> {
-    const carExists = await this.carRepository.findByLicense(license_plate);
-    if (carExists) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Car already exists',
-      });
-    }
+  async create({
+    owner_id,
+    name,
+    license_plate,
+  }: CreateVehicleDto): Promise<Vehicle> {
+    const vehicleExists = await this.vehicleRepository.findByLicense(
+      license_plate,
+    );
 
-    const ownerExists = await this.userRepository.findById(owner_id);
-    if (!ownerExists) {
+    if (vehicleExists) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Owner is not found',
+        message: 'This Vehicle already exists with an Owner',
       });
     }
 
@@ -47,31 +43,31 @@ export class CarsService {
       });
     }
 
-    const newCar = await this.carRepository.create({
+    const newCar = await this.vehicleRepository.create({
       owner_id,
       name,
       license_plate,
     });
 
-    return new Car(newCar);
+    return new Vehicle(newCar);
   }
 
   async findAll() {
-    const allCars = await this.carRepository.findAll();
+    const allVehicles = await this.vehicleRepository.findAll();
 
-    return allCars.map((car) => new Car(car));
+    return allVehicles.map((vehicle) => new Vehicle(vehicle));
   }
 
   async findById(id: number) {
-    const car = await this.carRepository.findById(id);
-    if (!car) {
+    const vehicle = await this.vehicleRepository.findById(id);
+    if (!vehicle) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'Car not found',
+        message: 'Vehicle not found',
       });
     }
 
-    return new Car(car);
+    return new Vehicle(vehicle);
   }
 
   async findByOwner(owner_id: number) {
@@ -83,43 +79,46 @@ export class CarsService {
       });
     }
 
-    const cars = await this.carRepository.findByOwner(owner_id);
-    if (!cars) {
+    const vehicles = await this.vehicleRepository.findByOwner(owner_id);
+    if (!vehicles) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'Car not found',
+        message: 'Vehicle not found',
       });
     }
 
-    return cars.map((car) => new Car(car));
+    return vehicles.map((car) => new Vehicle(car));
   }
 
   async findByLicense(license_plate: string) {
-    const car = await this.carRepository.findByLicense(license_plate);
+    const vehicle = await this.vehicleRepository.findByLicense(license_plate);
 
-    if (!car) {
+    if (!vehicle) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'Car not found',
+        message: 'Vehicle not found',
       });
     }
 
-    return new Car(car);
+    return new Vehicle(vehicle);
   }
 
-  async update(id: number, { owner_id, name, license_plate }: UpdateCarDto) {
-    const car = await this.carRepository.findById(id);
-    if (!car) {
+  async update(
+    id: number,
+    { owner_id, name, license_plate }: UpdateVehicleDto,
+  ) {
+    const vehicle = await this.vehicleRepository.findById(id);
+    if (!vehicle) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'Car not found',
+        message: 'Vehicle not found',
       });
     }
 
-    const carPlateExists = await this.carRepository.findByLicense(
+    const vehiclePlateExists = await this.vehicleRepository.findByLicense(
       license_plate,
     );
-    if (carPlateExists && carPlateExists.id !== id) {
+    if (vehiclePlateExists && vehiclePlateExists.id !== id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'License plate already exists',
@@ -134,24 +133,24 @@ export class CarsService {
       });
     }
 
-    const carUpdated = await this.carRepository.updateById(id, {
+    const vehicleUpdated = await this.vehicleRepository.updateById(id, {
       owner_id,
       name,
       license_plate,
     });
 
-    return new Car(carUpdated);
+    return new Vehicle(vehicleUpdated);
   }
 
   async remove(id: number) {
     try {
-      const deletedUser = await this.carRepository.delete(id);
+      const deletedUser = await this.vehicleRepository.delete(id);
 
-      return new Car(deletedUser);
+      return new Vehicle(deletedUser);
     } catch (error) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'Car not found',
+        message: 'Vehicle not found',
       });
     }
   }
