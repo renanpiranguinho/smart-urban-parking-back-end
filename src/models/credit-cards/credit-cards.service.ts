@@ -15,6 +15,8 @@ export class CreditCardsService {
 
   async create({
     ownerId,
+    cardName,
+    flag,
     number,
     expirationMonth,
     expirationYear,
@@ -34,6 +36,8 @@ export class CreditCardsService {
 
     const newCreditCard = await this.cardsRepository.create({
       ownerId,
+      cardName,
+      flag,
       number,
       expirationMonth,
       expirationYear,
@@ -85,7 +89,7 @@ export class CreditCardsService {
 
   async update(
     id: number,
-    { number, expirationMonth, expirationYear, cvc }: UpdateCreditCardDto,
+    { flag, number, expirationMonth, expirationYear, cvc }: UpdateCreditCardDto,
   ): Promise<CreditCard> {
     const card = await this.cardsRepository.findById(id);
 
@@ -97,6 +101,7 @@ export class CreditCardsService {
     }
 
     const updatedCard = await this.cardsRepository.updateById(id, {
+      flag,
       number,
       expirationMonth,
       expirationYear,

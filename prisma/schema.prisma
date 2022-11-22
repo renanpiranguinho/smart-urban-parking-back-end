@@ -29,6 +29,8 @@ model CreditCard {
   id              Int      @id @default(autoincrement())
   owner           User     @relation(fields: [ownerId], references: [id])
   ownerId         Int
+  cardName        String
+  flag            String   
   number          String
   expirationMonth Int
   expirationYear  Int

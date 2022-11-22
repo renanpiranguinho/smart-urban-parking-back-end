@@ -23,7 +23,7 @@ export class CreditCardsController {
   @Post()
   async create(@Body() createCreditCardDto: CreateCreditCardDto) {
     const newCard = await this.creditCardsService.create(createCreditCardDto);
-    console.log(newCard);
+    //console.log(newCard);
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.CREATED)
       .setHeaders({ Location: `/cards/${newCard.id}` })
