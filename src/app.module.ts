@@ -11,6 +11,7 @@ import { CreditCardsModule } from './models/credit-cards/credit-cards.module';
 import { SendMailModule } from './mail/send-mail.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentsModule } from './models/payments/payments.module';
+import { RegionsModule } from './models/region/regions.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentsModule } from './models/payments/payments.module';
     SendMailModule,
     CreditCardsModule,
     VehicleModule,
+    RegionsModule,
   ],
   providers: [
     PrismaService,
