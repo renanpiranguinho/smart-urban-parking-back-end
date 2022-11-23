@@ -16,7 +16,6 @@ export class CreditCardsService {
   async create({
     ownerId,
     cardName,
-    flag,
     number,
     expirationMonth,
     expirationYear,
@@ -34,6 +33,19 @@ export class CreditCardsService {
       });
     }
 
+    const flagTest = {
+      visa: /^4[0-9]{12}(?:[0-9]{3})/,
+      mastercard: /^5[1-5][0-9]{14}/,
+      amex: /^3[47][0-9]{13}/,
+      dinersClub: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
+      discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
+      jcb: /^(?:2131|1800|35\d{3})\d{11}/,
+    } as const;
+
+    const flag = Object.keys(flagTest).find(
+      (currentFlag) => !!number.match(flagTest[currentFlag]),
+    );
+
     const newCreditCard = await this.cardsRepository.create({
       ownerId,
       cardName,
@@ -43,8 +55,6 @@ export class CreditCardsService {
       expirationYear,
       cvc,
     });
-
-    console.log(newCreditCard);
 
     return new CreditCard(newCreditCard);
   }
