@@ -33,16 +33,6 @@ export class VehiclesService {
       });
     }
 
-    const regex = '[A-Z]{3}[0-9][0-9A-Z][0-9]{2}'; //Mercosul e padrão.
-    const licenseHasValid = license_plate.match(regex);
-
-    if (!licenseHasValid) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'License plate not match with requirements',
-      });
-    }
-
     const newVehicle = await this.vehicleRepository.create({
       owner_id,
       name,
