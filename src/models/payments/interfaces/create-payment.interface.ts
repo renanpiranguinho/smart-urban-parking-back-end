@@ -6,6 +6,7 @@ export interface CreatePaymentInterface {
   credits: number;
   region: number;
   amount: number;
+  vehicleId: number;
   license_plate: string;
   description?: string;
   method: string;

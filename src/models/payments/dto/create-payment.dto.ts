@@ -1,5 +1,11 @@
 import { CardInfo } from '../interfaces/create-card-info.interface';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PaymentItem } from 'mercadopago/models/payment/create-payload.model';
 import { SimpleAddress } from 'mercadopago/shared/address';
 import { Phone } from 'mercadopago/shared/phone';
@@ -23,9 +29,18 @@ export class CreatePaymentDto {
   @IsNumber({}, { message: 'region must be a number' })
   region: number;
 
-  @IsNotEmpty({ message: 'license_plate is required' })
+  @IsOptional()
   @IsString({ message: 'license_plate must be a string' })
-  license_plate: string;
+  license_plate?: string;
+
+  @IsOptional()
+  @IsNumber(
+    {},
+    {
+      message: 'Vehicle must be anumber',
+    },
+  )
+  vehicle_id?: number;
 
   @IsNotEmpty({ message: 'credits is required' })
   @IsNumber({}, { message: 'credits must be a number' })

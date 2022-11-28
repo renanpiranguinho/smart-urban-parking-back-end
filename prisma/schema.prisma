@@ -11,42 +11,43 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
+  id         Int            @id @default(autoincrement())
   name       String
-  email      String       @unique()
-  cpf        String       @unique()
+  email      String         @unique()
+  cpf        String         @unique()
   password   String
-  is_active  Boolean      @default(false)
-  role       Role         @default(USER)
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt()
+  is_active  Boolean        @default(false)
+  role       Role           @default(USER)
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt()
   deleted_at DateTime?
   cards      CreditCard[]
   vehicles   UserVehicles[]
 }
 
 model CreditCard {
-  id              Int      @id @default(autoincrement())
-  owner           User     @relation(fields: [ownerId], references: [id])
+  id              Int       @id @default(autoincrement())
+  owner           User      @relation(fields: [ownerId], references: [id])
   ownerId         Int
   cardName        String
-  flag            String   
+  flag            String
   number          String
   expirationMonth Int
   expirationYear  Int
   cvc             Int
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt()
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt()
   deleted_at      DateTime?
 }
 
 model Vehicle {
   id            Int            @id @default(autoincrement())
   name          String
-  license_plate String         
+  license_plate String
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt()
   users         UserVehicles[]
+  Payment       Payment[]
 }
 
 model UserVehicles {
@@ -77,22 +78,24 @@ enum Status {
 }
 
 model Payment {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   name          String
   cpf           String
   credits       Int
   region        Int
   amount        Float
+  vehicle       Vehicle?  @relation(fields: [vehicleId], references: [id])
+  vehicleId     Int?
   license_plate String
   description   String?
   method        String
-  status        Status   @default(pending)
-  created_at    DateTime @default(now())
+  status        Status    @default(pending)
+  created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt()
   valid_until   DateTime?
 
   //  Fiscal
-  buyer_id      Int?   
+  buyer_id Int?
 
   //  Mercado Pago
   payment_id    Int?
@@ -106,10 +109,10 @@ model Payment {
 }
 
 model Region {
-  id            Int      @id @default(autoincrement())
-  latitude      Float
-  longitude     Float
-  region        String
-  price         Float
-  parking_lots  Int
+  id           Int    @id @default(autoincrement())
+  latitude     Float
+  longitude    Float
+  region       String
+  price        Float
+  parking_lots Int
 }
