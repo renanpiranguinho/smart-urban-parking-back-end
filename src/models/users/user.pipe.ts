@@ -56,11 +56,6 @@ export class UserPipe implements PipeTransform {
       user.cpf = cpfFormatted;
     }
 
-    return {
-      name: user.name,
-      cpf: user.cpf,
-      email: user.email,
-      password: user.password,
-    };
+    return user;
   }
 }
