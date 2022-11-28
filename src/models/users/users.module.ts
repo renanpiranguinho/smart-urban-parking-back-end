@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { EncryptData } from '../../utils/encrypt-data';
-import { PasswordPipe } from './password.pipe';
+import { UserPipe } from './user.pipe';
 import { BullModule } from '@nestjs/bull';
 import { UsersRepository } from './repository/user.repository';
 import { GenerateToken } from 'src/providers/generate-token';
@@ -29,7 +29,7 @@ import { SendMailService } from 'src/mail/send-mail.service';
     SendMailService,
     JwtModule,
     EncryptData,
-    PasswordPipe,
+    UserPipe,
     UsersRepository,
     GenerateToken,
   ],

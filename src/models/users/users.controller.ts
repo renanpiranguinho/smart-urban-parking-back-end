@@ -17,7 +17,7 @@ import { NestResponse } from '../../core/http/nestResponse';
 import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PasswordPipe } from './password.pipe';
+import { UserPipe } from './user.pipe';
 import { IUserRequestData } from '../../auth/auth.controller';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from './enums/role.enum';
@@ -31,7 +31,7 @@ export class UsersController {
 
   @Post()
   async create(
-    @Body(PasswordPipe) createUserDto: CreateUserDto,
+    @Body(UserPipe) createUserDto: CreateUserDto,
   ): Promise<NestResponse> {
     const newUser = await this.usersService.create(createUserDto);
     const response = new NestResponseBuilder()
@@ -90,7 +90,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body(UserPipe) updateUserDto: UpdateUserDto,
   ): Promise<NestResponse> {
     const updatedUser = await this.usersService.update(id, updateUserDto);
 
