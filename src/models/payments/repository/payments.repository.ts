@@ -60,4 +60,17 @@ export class PaymentsRepository implements IPaymentsRepository {
 
     return allPayments;
   }
+
+  async findApprovedByDate(date: Date): Promise<Payment[]> {
+    const paymentsFound = await this.prismaService.payment.findMany({
+      where: {
+        status: 'approved',
+        valid_until: {
+          gte: date,
+        },
+      },
+    });
+
+    return paymentsFound;
+  }
 }

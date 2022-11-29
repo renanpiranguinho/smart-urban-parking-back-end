@@ -9,4 +9,5 @@ export interface IPaymentsRepository {
   findByUser(cpf: string): Promise<Payment[]>;
   findByBuyer(buyerId: number): Promise<Payment[]>;
   findAll(): Promise<Payment[]>;
+  findApprovedByDate(date: Date): Promise<Payment[]>;
 }

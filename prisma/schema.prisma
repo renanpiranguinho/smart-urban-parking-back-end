@@ -97,6 +97,12 @@ model Payment {
   //  Mercado Pago
   payment_id    Int?
   hash          String
+
+  //  Task
+  notified             Boolean  @default(false)
+  notified_at          DateTime?
+  notified_fiscal      Boolean  @default(false)
+  notified_fiscal_at   DateTime?
 }
 
 model Region {

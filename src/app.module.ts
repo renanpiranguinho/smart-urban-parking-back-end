@@ -12,6 +12,7 @@ import { SendMailModule } from './mail/send-mail.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentsModule } from './models/payments/payments.module';
 import { RegionsModule } from './models/region/regions.module';
+import { TaskModule } from './notifications/task.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RegionsModule } from './models/region/regions.module';
     AuthModule,
     PaymentsModule,
     SendMailModule,
+    TaskModule,
     CreditCardsModule,
     VehicleModule,
     RegionsModule,
