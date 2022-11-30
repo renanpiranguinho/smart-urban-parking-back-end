@@ -286,4 +286,10 @@ export class PaymentsService {
       message: 'error',
     });
   }
+
+  async getPaymentsForTask(date: Date): Promise<any[]> {
+    const payments = await this.paymentsRepository.findApprovedByDate(date);
+
+    return payments;
+  }
 }
