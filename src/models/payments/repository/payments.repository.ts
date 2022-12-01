@@ -61,8 +61,6 @@ export class PaymentsRepository implements IPaymentsRepository {
         license_plate: license_plate,
       },
     });
-    console.log(allPayments)
-    console.log(license_plate)
     return allPayments;
   }
 

@@ -105,9 +105,11 @@ export class PaymentsService {
 
     let vehicle_id = createPaymentDto.vehicle_id;
     let vehicle: Vehicle;
-    const license_plate = createPaymentDto.license_plate;
+    let license_plate = createPaymentDto.license_plate;
 
     if (license_plate) {
+      license_plate = license_plate.replace(/[\-]/g, '').toUpperCase();
+
       vehicle = await this.vehicleRepository.create({
         name: 'Uknown car',
         license_plate: license_plate,
@@ -197,6 +199,9 @@ export class PaymentsService {
   }
 
   async findAll(license_plate?: string): Promise<Payment[]> {
+    if (license_plate)
+      license_plate = license_plate.replace(/[\-]/g, '').toUpperCase();
+
     const payments = await this.paymentsRepository.findAll(license_plate);
 
     return payments;
