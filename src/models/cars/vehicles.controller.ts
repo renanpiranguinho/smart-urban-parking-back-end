@@ -1,3 +1,4 @@
+import { VehiclePipe } from './vehicle.pipe';
 import { IUserRequestData } from '../../auth/auth.controller';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { NestResponseBuilder } from '../../core/http/nestResponseBuilder';
@@ -32,7 +33,7 @@ export class VehiclesController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Body() createVehicleDto: CreateVehicleDto,
+    @Body(VehiclePipe) createVehicleDto: CreateVehicleDto,
   ): Promise<NestResponse> {
     const newVehicle = await this.vehiclesService.create(createVehicleDto);
 
@@ -89,7 +90,7 @@ export class VehiclesController {
   @UseGuards(JwtAuthGuard)
   @Get('/findbyplate')
   async findByLicensePlate(
-    @Body() data: IFindCarRequestData,
+    @Body(VehiclePipe) data: IFindCarRequestData,
   ): Promise<NestResponse> {
     const vehicleFound = await this.vehiclesService.findByLicense(
       data.license_plate,
@@ -105,7 +106,7 @@ export class VehiclesController {
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateVehicleDto: UpdateVehicleDto,
+    @Body(VehiclePipe) updateVehicleDto: UpdateVehicleDto,
   ): Promise<NestResponse> {
     const updatedVehicle = await this.vehiclesService.update(
       id,
