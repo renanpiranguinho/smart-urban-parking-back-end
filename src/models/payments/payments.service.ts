@@ -14,8 +14,8 @@ import { FormatData } from './../../utils/format-data';
 import { v4 } from 'uuid';
 import { VerifyParams } from 'src/utils/verify-params';
 import { Status } from '@prisma/client';
-import { VehicleRepository } from '../cars/repository/vehicle.repository';
-import { Vehicle } from '../cars/entities/vehicle.entity';
+import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
+import { Vehicle } from '../vehicles/entities/vehicle.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -196,8 +196,8 @@ export class PaymentsService {
     return paymentUpdated;
   }
 
-  async findAll(): Promise<Payment[]> {
-    const payments = await this.paymentsRepository.findAll();
+  async findAll(license_plate?: string): Promise<Payment[]> {
+    const payments = await this.paymentsRepository.findAll(license_plate);
 
     return payments;
   }

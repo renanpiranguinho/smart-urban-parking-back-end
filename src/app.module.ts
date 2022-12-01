@@ -1,4 +1,4 @@
-import { VehicleModule } from './models/cars/vehicles.module';
+import { VehicleModule } from './models/vehicles/vehicles.module';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 

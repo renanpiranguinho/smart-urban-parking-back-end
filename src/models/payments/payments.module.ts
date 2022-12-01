@@ -15,7 +15,7 @@ import { MercadoPagoService } from './mercadopago.service';
 import { UsersService } from '../users/users.service';
 import { VerifyParams } from 'src/utils/verify-params';
 import { EncryptData } from 'src/utils/encrypt-data';
-import { VehicleRepository } from '../cars/repository/vehicle.repository';
+import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
 
 @Module({
   imports: [

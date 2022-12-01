@@ -55,9 +55,14 @@ export class PaymentsRepository implements IPaymentsRepository {
     return paymentsFound;
   }
 
-  async findAll(): Promise<Payment[]> {
-    const allPayments = await this.prismaService.payment.findMany();
-
+  async findAll(license_plate?: string): Promise<Payment[]> {
+    const allPayments = await this.prismaService.payment.findMany({
+      where: {
+        license_plate: license_plate,
+      },
+    });
+    console.log(allPayments)
+    console.log(license_plate)
     return allPayments;
   }
 
