@@ -6,6 +6,7 @@ import {
   Param,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -39,8 +40,10 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get()
-  async findAll(): Promise<NestResponse> {
-    const payments = await this.paymentsService.findAll();
+  async findAll(
+    @Query('license_plate') license_plate: string,
+  ): Promise<NestResponse> {
+    const payments = await this.paymentsService.findAll(license_plate);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)

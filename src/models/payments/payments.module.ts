@@ -15,6 +15,7 @@ import { MercadoPagoService } from './mercadopago.service';
 import { UsersService } from '../users/users.service';
 import { VerifyParams } from 'src/utils/verify-params';
 import { EncryptData } from 'src/utils/encrypt-data';
+import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EncryptData } from 'src/utils/encrypt-data';
     PaymentsController,
     PrismaService,
     UsersRepository,
+    VehicleRepository,
     PaymentsRepository,
     GenerateToken,
     AuthService,

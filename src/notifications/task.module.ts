@@ -9,6 +9,7 @@ import { MercadoPagoService } from 'src/models/payments/mercadopago.service';
 import { FormatData } from 'src/utils/format-data';
 import { VerifyParams } from 'src/utils/verify-params';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { VehicleRepository } from 'src/models/vehicles/repository/vehicle.repository';
 
 @Module({
   imports: [ScheduleModule.forRoot()],
@@ -20,6 +21,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
     PaymentsRepository,
     MercadoPagoService,
     FormatData,
+    VehicleRepository,
     VerifyParams,
     PrismaService,
   ],

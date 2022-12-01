@@ -14,11 +14,14 @@ import { FormatData } from './../../utils/format-data';
 import { v4 } from 'uuid';
 import { VerifyParams } from 'src/utils/verify-params';
 import { Status } from '@prisma/client';
+import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
+import { Vehicle } from '../vehicles/entities/vehicle.entity';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     private readonly paymentsRepository: PaymentsRepository,
+    private readonly vehicleRepository: VehicleRepository,
     private readonly mercadoPagoService: MercadoPagoService,
     private readonly formatData: FormatData,
     private readonly verifyParams: VerifyParams,
@@ -100,6 +103,22 @@ export class PaymentsService {
       tokenId = token.body.id;
     }
 
+    let vehicle_id = createPaymentDto.vehicle_id;
+    let vehicle: Vehicle;
+    let license_plate = createPaymentDto.license_plate;
+
+    if (license_plate) {
+      license_plate = license_plate.replace(/[\-]/g, '').toUpperCase();
+
+      vehicle = await this.vehicleRepository.create({
+        name: 'Uknown car',
+        license_plate: license_plate,
+      });
+      vehicle_id = vehicle.id;
+    } else {
+      vehicle = await this.vehicleRepository.findById(vehicle_id);
+    }
+
     const paymentCreated = await this.paymentsRepository.create({
       amount: transactionAmount,
       created_at: new Date(),
@@ -109,7 +128,8 @@ export class PaymentsService {
       cpf: createPaymentDto.cpf,
       credits: createPaymentDto.credits,
       region: region,
-      license_plate: createPaymentDto.license_plate,
+      license_plate: license_plate ?? vehicle.license_plate,
+      vehicleId: vehicle_id,
       description: createPaymentDto.description,
       method: createPaymentDto.method,
       buyer_id: createPaymentDto.buyer_id,
@@ -178,8 +198,11 @@ export class PaymentsService {
     return paymentUpdated;
   }
 
-  async findAll(): Promise<Payment[]> {
-    const payments = await this.paymentsRepository.findAll();
+  async findAll(license_plate?: string): Promise<Payment[]> {
+    if (license_plate)
+      license_plate = license_plate.replace(/[\-]/g, '').toUpperCase();
+
+    const payments = await this.paymentsRepository.findAll(license_plate);
 
     return payments;
   }
