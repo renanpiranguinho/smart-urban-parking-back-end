@@ -10,6 +10,14 @@ interface SendConfirmationMailDto {
   url: string;
 }
 
+interface SendPaymentVoucherMailDto {
+  email: string;
+  name: string;
+  license_plate: string;
+  price: string;
+  validity: string;
+}
+
 @Injectable()
 export class SendMailService {
   constructor(
@@ -18,5 +26,14 @@ export class SendMailService {
 
   async sendConfirmationMail(sendConfirmationMailDto: SendConfirmationMailDto) {
     await this.mailQueue.add(JobsEnum.SEND_MAIL, sendConfirmationMailDto);
+  }
+
+  async sendPaymentVoucherMail(
+    sendPaymentVoucherMailDto: SendPaymentVoucherMailDto,
+  ) {
+    await this.mailQueue.add(
+      JobsEnum.SEND_PAYMENT_VOUCHER,
+      sendPaymentVoucherMailDto,
+    );
   }
 }

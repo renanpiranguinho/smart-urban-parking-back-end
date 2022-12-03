@@ -20,7 +20,7 @@ export class PaymentsRepository implements IPaymentsRepository {
   async update(
     id: number,
     updatePayment: UpdatePaymentInterface,
-  ): Promise<any> {
+  ): Promise<Payment> {
     const paymentUpdated = await this.prismaService.payment.update({
       where: { id },
       data: {

@@ -44,6 +44,8 @@ import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
     UsersService,
     FormatData,
     VerifyParams,
+    SendMailService,
+    UsersRepository,
   ],
 })
 export class PaymentsModule {}
