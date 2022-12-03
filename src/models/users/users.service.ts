@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './repository/user.repository';
+import { SetRoleDto } from './dto/set-role-dto';
 
 @Injectable()
 export class UsersService {
@@ -119,5 +120,22 @@ export class UsersService {
         message: 'User not found',
       });
     }
+  }
+
+  async setRole(id: number, { role }: SetRoleDto): Promise<User> {
+    const user = await this.usersRepository.findById(id);
+
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      });
+    }
+
+    const updatedUser = await this.usersRepository.setRoleById(id, {
+      role,
+    });
+
+    return new User(updatedUser);
   }
 }

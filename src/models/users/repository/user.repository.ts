@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { SetRoleDto } from '../dto/set-role-dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { IUsersRepository } from './i-users-repository';
@@ -94,5 +95,16 @@ export class UsersRepository implements IUsersRepository {
     });
 
     return deletedUser;
+  }
+
+  async setRoleById(id: number, { role }: SetRoleDto): Promise<User> {
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: {
+        role,
+      },
+    });
+
+    return updatedUser;
   }
 }
