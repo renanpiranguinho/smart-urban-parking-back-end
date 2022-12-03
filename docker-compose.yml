@@ -37,7 +37,7 @@ services:
       - /var/cache/ntfy:/var/cache/ntfy
       - /etc/ntfy:/etc/ntfy
     ports:
-      - 80:80
+      - ${NOTIFICATION_PORT}:80
     networks:
       - app-net
 
