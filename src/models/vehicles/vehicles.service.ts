@@ -22,17 +22,6 @@ export class VehiclesService {
     name,
     license_plate,
   }: CreateVehicleDto): Promise<Vehicle> {
-    const vehicleExists = await this.vehicleRepository.findByLicense(
-      license_plate,
-    );
-
-    if (vehicleExists) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'This Vehicle already exists with an Owner',
-      });
-    }
-
     const newVehicle = await this.vehicleRepository.create({
       owner_id,
       name,
@@ -105,28 +94,12 @@ export class VehiclesService {
       });
     }
 
-    const vehiclePlateExists = await this.vehicleRepository.findByLicense(
-      license_plate,
-    );
-
     const ownerExists = await this.userRepository.findById(owner_id);
     if (!ownerExists) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: 'Owner is not found',
       });
-    }
-
-    if (vehiclePlateExists) {
-      if (!owner_id) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'License plate already exists',
-        });
-      }
-      if (vehiclePlateExists.users.find((u) => u.user_id == owner_id)) {
-        owner_id = undefined;
-      }
     }
 
     const vehicleUpdated = await this.vehicleRepository.updateById(id, {

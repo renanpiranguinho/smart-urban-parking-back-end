@@ -11,18 +11,18 @@ datasource db {
 }
 
 model User {
-  id         Int            @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String
-  email      String         @unique()
-  cpf        String         @unique()
+  email      String       @unique()
+  cpf        String       @unique()
   password   String
-  is_active  Boolean        @default(false)
-  role       Role           @default(USER)
-  created_at DateTime       @default(now())
-  updated_at DateTime       @updatedAt()
+  is_active  Boolean      @default(false)
+  role       Role         @default(USER)
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt()
   deleted_at DateTime?
   cards      CreditCard[]
-  vehicles   UserVehicles[]
+  Vehicle    Vehicle[]
 }
 
 model CreditCard {
@@ -41,23 +41,14 @@ model CreditCard {
 }
 
 model Vehicle {
-  id            Int            @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   name          String
   license_plate String
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt()
-  users         UserVehicles[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt()
+  user          User?      @relation(fields: [userId], references: [id])
+  userId        Int?
   Payment       Payment[]
-}
-
-model UserVehicles {
-  vehicle    Vehicle  @relation(fields: [vehicle_id], references: [id], onDelete: Cascade)
-  vehicle_id Int
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id    Int
-  created_at DateTime @default(now())
-
-  @@id([vehicle_id, user_id])
 }
 
 enum Role {
@@ -98,14 +89,14 @@ model Payment {
   buyer_id Int?
 
   //  Mercado Pago
-  payment_id    Int?
-  hash          String
+  payment_id Int?
+  hash       String
 
   //  Task
-  notified             Boolean  @default(false)
-  notified_at          DateTime?
-  notified_fiscal      Boolean  @default(false)
-  notified_fiscal_at   DateTime?
+  notified           Boolean   @default(false)
+  notified_at        DateTime?
+  notified_fiscal    Boolean   @default(false)
+  notified_fiscal_at DateTime?
 }
 
 model Region {
