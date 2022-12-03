@@ -16,6 +16,9 @@ import { VerifyParams } from 'src/utils/verify-params';
 import { Status } from '@prisma/client';
 import { VehicleRepository } from '../vehicles/repository/vehicle.repository';
 import { Vehicle } from '../vehicles/entities/vehicle.entity';
+import { SendMailService } from 'src/mail/send-mail.service';
+import format from 'date-fns/format';
+import { UsersRepository } from '../users/repository/user.repository';
 
 @Injectable()
 export class PaymentsService {
@@ -25,6 +28,8 @@ export class PaymentsService {
     private readonly mercadoPagoService: MercadoPagoService,
     private readonly formatData: FormatData,
     private readonly verifyParams: VerifyParams,
+    private readonly sendMailService: SendMailService,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   // if exists buyer_id, then create payment with buyer_id
@@ -275,10 +280,35 @@ export class PaymentsService {
                 const valid_until = new Date();
                 valid_until.setHours(valid_until.getHours() + credits);
 
-                await this.paymentsRepository.update(paymentExists.id, {
-                  valid_until: valid_until,
-                  updated_at: new Date(),
-                });
+                const updatedPayment = await this.paymentsRepository.update(
+                  paymentExists.id,
+                  {
+                    valid_until: valid_until,
+                    updated_at: new Date(),
+                  },
+                );
+
+                const confirmedPayment =
+                  await this.mercadoPagoService.getPayment(
+                    updatedPayment.payment_id,
+                  );
+
+                if (confirmedPayment) {
+                  const email = confirmedPayment?.payer?.email;
+
+                  if (email) {
+                    this.sendMailService.sendPaymentVoucherMail({
+                      email: email,
+                      license_plate: updatedPayment.license_plate,
+                      name: updatedPayment.name,
+                      price: `R$ ${String(updatedPayment.amount).replace(
+                        '.',
+                        ',',
+                      )}`,
+                      validity: format(valid_until, 'dd/MM/yyyy hh:mm:ss'),
+                    });
+                  }
+                }
 
                 console.log('approved');
               } else if (status === Status.rejected) {
