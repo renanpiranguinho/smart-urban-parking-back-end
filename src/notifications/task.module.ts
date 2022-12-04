@@ -10,9 +10,17 @@ import { FormatData } from 'src/utils/format-data';
 import { VerifyParams } from 'src/utils/verify-params';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VehicleRepository } from 'src/models/vehicles/repository/vehicle.repository';
+import { SendMailService } from 'src/mail/send-mail.service';
+import { UsersRepository } from 'src/models/users/repository/user.repository';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
-  imports: [ScheduleModule.forRoot()],
+  imports: [
+    ScheduleModule.forRoot(),
+    BullModule.registerQueue({
+      name: 'mail-queue',
+    }),
+  ],
   controllers: [],
   providers: [
     TasksService,
@@ -24,6 +32,8 @@ import { VehicleRepository } from 'src/models/vehicles/repository/vehicle.reposi
     VehicleRepository,
     VerifyParams,
     PrismaService,
+    SendMailService,
+    UsersRepository,
   ],
   exports: [TasksService, SendNotificationService, PaymentsService],
 })
