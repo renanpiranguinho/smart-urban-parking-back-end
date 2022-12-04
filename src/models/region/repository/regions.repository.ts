@@ -51,6 +51,20 @@ export class RegionsRepository implements IRegionsRepository {
     return regions;
   }
 
+  async countVacanciesOccupied(id: number, date: Date): Promise<number> {
+    const vacancies = await this.prismaService.payment.count({
+      where: {
+        region: id,
+        status: 'approved',
+        valid_until: {
+          gte: date,
+        },
+      },
+    });
+
+    return vacancies;
+  }
+
   async delete(id: number): Promise<any> {
     const deletedRegion = await this.prismaService.region.delete({
       where: { id },

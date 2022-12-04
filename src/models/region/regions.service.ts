@@ -92,4 +92,22 @@ export class RegionsService {
 
     return deletedRegion;
   }
+
+  async getVacancies(id: number): Promise<number> {
+    const region = await this.regionsRepository.findById(id);
+
+    if (!region) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Region not found',
+      });
+    }
+
+    const now = new Date();
+
+    const vacanciesOccupied =
+      await this.regionsRepository.countVacanciesOccupied(id, now);
+
+    return region.parking_lots - vacanciesOccupied;
+  }
 }
