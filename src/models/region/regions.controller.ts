@@ -118,4 +118,20 @@ export class RegionsController {
 
     return response;
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('vacancies/:id')
+  async getVacancies(@Param('id') id: number): Promise<NestResponse> {
+    const vacancies = await this.regionsService.getVacancies(id);
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody({
+        vacancies,
+      })
+      .build();
+
+    return response;
+  }
 }
