@@ -30,7 +30,7 @@ export class SendMailConsumer {
       to: email,
       from: process.env.EMAIL_LOGIN,
       subject: 'Estacione Aqui | Confirmação',
-      template: './confirmation',
+      template: 'confirmation.hbs',
       context: {
         name,
         url,
@@ -46,7 +46,7 @@ export class SendMailConsumer {
       to: email,
       from: process.env.EMAIL_LOGIN,
       subject: 'Estacione Aqui | Comprovante',
-      template: './payment-voucher',
+      template: 'payment-voucher.hbs',
       context: {
         name,
         license_plate,
