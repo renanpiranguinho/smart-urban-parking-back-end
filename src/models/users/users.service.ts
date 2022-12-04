@@ -84,7 +84,7 @@ export class UsersService {
 
   async update(
     id: number,
-    { cpf: username, email, password }: UpdateUserDto,
+    { name, cpf, email, password }: UpdateUserDto,
   ): Promise<User> {
     const user = await this.usersRepository.findById(id);
 
@@ -95,14 +95,11 @@ export class UsersService {
       });
     }
 
-    const passwordHash = password
-      ? await this.encryptData.encrypt(password, 10)
-      : undefined;
-
     const updatedUser = await this.usersRepository.updateById(id, {
-      cpf: username,
+      name,
+      cpf,
       email,
-      password: password && passwordHash,
+      password: password && password,
     });
 
     return new User(updatedUser);

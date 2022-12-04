@@ -84,7 +84,6 @@ export class UsersController {
     return response;
   }
 
-  @Roles(Role.ADMIN, Role.FISCAL)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
