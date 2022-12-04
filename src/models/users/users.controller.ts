@@ -22,6 +22,7 @@ import { IUserRequestData } from '../../auth/auth.controller';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { SetRoleDto } from './dto/set-role-dto';
 
 @ApiTags('Users')
 @UseGuards(RolesGuard)
@@ -113,6 +114,24 @@ export class UsersController {
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
       .setBody(deletedUser)
+      .build();
+
+    return response;
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('/setRole/:id')
+  async setRole(
+    @Param('id') id: number,
+    @Body() setRoleDto: SetRoleDto,
+  ): Promise<NestResponse> {
+    const userUpdated = await this.usersService.setRole(id, setRoleDto);
+
+    const response = new NestResponseBuilder()
+      .setStatus(HttpStatus.OK)
+      .setBody(userUpdated)
       .build();
 
     return response;
